@@ -12,7 +12,7 @@ fn main() {
 }
 
 fn run_day(day: String) {
-    println!("{}", day);
+    println!("Day {}", day);
 
     if day == "1" {
         day::day01::day01();
