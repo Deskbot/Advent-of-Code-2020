@@ -7,8 +7,19 @@ pub fn day01() {
         .map(|line| line.parse::<i32>().unwrap())
         .collect::<Vec<i32>>();
 
-    for num in &numbers {
-        println!("{}", num);
+    let result = do_maths(&numbers);
+
+    println!("{}", result);
+}
+
+fn do_maths(numbers: &Vec<i32>) -> i32 {
+    for left in numbers {
+        for right in numbers {
+            if left + right == 2020 {
+                return left * right;
+            }
+        }
     }
 
+    panic!("No pair of numbers adds up to 2020.")
 }
