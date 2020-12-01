@@ -7,12 +7,14 @@ pub fn day01() {
         .map(|line| line.parse::<i32>().unwrap())
         .collect::<Vec<i32>>();
 
-    let result = do_maths(&numbers);
+    let result = part1(&numbers);
+    println!("Part1: {}", result);
 
-    println!("{}", result);
+    let result = part2(&numbers);
+    println!("Part2: {}", result);
 }
 
-fn do_maths(numbers: &Vec<i32>) -> i32 {
+fn part1(numbers: &Vec<i32>) -> i32 {
     for left in numbers {
         for right in numbers {
             if left + right == 2020 {
@@ -22,4 +24,18 @@ fn do_maths(numbers: &Vec<i32>) -> i32 {
     }
 
     panic!("No pair of numbers adds up to 2020.")
+}
+
+fn part2(numbers: &Vec<i32>) -> i32 {
+    for first in numbers {
+        for second in numbers {
+            for third in numbers {
+                if first + second + third == 2020 {
+                    return first * second * third;
+                }
+            }
+        }
+    }
+
+    panic!("No trio of numbers adds up to 2020.")
 }
