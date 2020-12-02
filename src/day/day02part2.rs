@@ -10,9 +10,10 @@ struct Rule {
 
 impl Rule {
     pub fn test(&self, password: &str) -> bool {
-        for &index in &self.allowed_index {
+        for &elf_index in &self.allowed_index {
             let mut itr = password.chars();
 
+            let index = elf_index - 1;
             let char_at_index = itr.nth(index as usize);
 
             if char_at_index.is_some() && self.letter == char_at_index.unwrap() {
@@ -66,4 +67,15 @@ fn parse_pair(range: &str) -> Vec<i32> {
         Some(vec![left,right])
     })
     .expect(format!("Couldn't parse pair: {}", range).as_str())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test1() {
+        assert!(!test_line("1-3 b: cdefg"));
+        assert!(!test_line("2-9 c: ccccccccc"));
+        assert!(test_line("1-3 a: abcde"));
+    }
 }
