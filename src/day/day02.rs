@@ -27,7 +27,10 @@ pub fn day02() {
         let rule = poop.nth(0);
         let password = poop.nth(1);
 
-        (password);
+        let parsed_rule = option_bind(rule, |rule| parse_rule(rule));
+
+        both(parsed_rule, password)
+            .and_then(|(parsed_rule, password)| Some((parsed_rule, password)))
     });
 }
 
