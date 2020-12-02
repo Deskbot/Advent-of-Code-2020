@@ -2,6 +2,11 @@ use std::env;
 
 mod day;
 
+use day::{
+    day01::*,
+    day02::*,
+};
+
 fn main() {
     let mut args = env::args();
 
@@ -16,8 +21,8 @@ fn main() {
 
 fn run_day(day: u8) {
     let days = [
-        day::day01::day01,
-        day::day02::day02,
+        day01,
+        day02,
     ];
 
     let day_func = days.get(day as usize).expect("Invalid day given.");
