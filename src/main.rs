@@ -25,7 +25,8 @@ fn run_day(day: u8) {
         day02,
     ];
 
-    let day_func = days.get(day as usize).expect("Invalid day given.");
+    let day_index = (day - 1) as usize;
+    let day_func = days.get(day_index).expect("Invalid day given.");
 
     println!("Day {}", day);
     day_func();
