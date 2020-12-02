@@ -13,7 +13,7 @@ struct Range {
 
 impl Range {
     pub fn contains(&self, num: i32) -> bool {
-        num <= self.min && num >= self.max
+        num >= self.min && num <= self.max
     }
 }
 
@@ -38,23 +38,25 @@ pub fn day02() {
 
     let lines = file.lines();
 
-    let things_to_test = lines.map(|line| {
-        let mut itr = line.split(": ");
-        let rule = itr.next();
-        let password = itr.next();
-
-        let parsed_rule = rule.map(parse_rule);
-
-        both(parsed_rule, password)
-            .and_then(|(parsed_rule, password)| Some((parsed_rule, password)))
-            .unwrap()
-    });
+    let things_to_test = lines.map(test_line);
 
     let matching_passwords = things_to_test
-        .filter(|(rule, password)| rule.test(password))
+        .filter(|&b| b)
         .count();
 
     println!("Part 1: {}", matching_passwords);
+}
+
+fn test_line(line: &str) -> bool {
+    let mut itr = line.split(": ");
+    let rule = itr.next();
+    let password = itr.next();
+
+    let parsed_rule = rule.map(parse_rule);
+
+    both(parsed_rule, password)
+        .and_then(|(rule, password)| Some(rule.test(password)))
+        .unwrap()
 }
 
 fn parse_rule(rule: &str) -> Rule {
@@ -88,4 +90,15 @@ fn parse_range(range: &str) -> Range {
             })
         })
         .expect(format!("Couldn't parse range: {}", range).as_str())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test]
+    fn test1() {
+        assert!(test_line("1-3 a: abcde"));
+        assert!(!test_line("1-3 b: cdefg"));
+        assert!(test_line("2-9 c: ccccccccc"));
+    }
 }
