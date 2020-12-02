@@ -12,7 +12,7 @@ struct Range {
 }
 
 impl Range {
-    pub fn contains(self, num: i32) -> bool {
+    pub fn contains(&self, num: i32) -> bool {
         num <= self.min && num >= self.max
     }
 }
@@ -23,7 +23,7 @@ struct Rule {
 }
 
 impl Rule {
-    pub fn test(self, password: &str) -> bool {
+    pub fn test(&self, password: &str) -> bool {
         let num_matching_chars = password.chars()
             .filter(|&c| c == self.letter)
             .count();
@@ -36,7 +36,7 @@ pub fn day02() {
     let file = fs::read_to_string("input/day02.txt")
         .expect("input not found");
 
-    let mut lines = file.lines();
+    let lines = file.lines();
 
     let things_to_test = lines.map(|line| {
         let mut itr = line.split(": ");
@@ -47,6 +47,7 @@ pub fn day02() {
 
         both(parsed_rule, password)
             .and_then(|(parsed_rule, password)| Some((parsed_rule, password)))
+            .unwrap()
     });
 
     things_to_test.filter(|(rule, password)| rule.test(password));
