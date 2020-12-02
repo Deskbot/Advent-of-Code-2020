@@ -43,7 +43,7 @@ pub fn day02() {
         let rule = itr.nth(0);
         let password = itr.nth(1);
 
-        let parsed_rule = option_bind(rule, |rule| parse_rule(rule));
+        let parsed_rule = rule.map(parse_rule);
 
         both(parsed_rule, password)
             .and_then(|(parsed_rule, password)| Some((parsed_rule, password)))
@@ -60,9 +60,16 @@ pub fn day02() {
 fn parse_rule(rule: &str) -> Rule {
     let mut itr = rule.split(" ");
 
+    println!("{}", rule);
+
     let range = itr.nth(0);
-    let letter = itr.nth(1)
-        .and_then(|letter| letter.chars().nth(0));
+
+    println!("poop {}", itr.clone().count());
+
+    let letter = option_bind(
+        itr.nth(1),
+        |letter| letter.chars().nth(0)
+    );
 
     both(range, letter).and_then(|(range, letter)| {
         Some(Rule {
@@ -72,8 +79,6 @@ fn parse_rule(rule: &str) -> Rule {
     })
     .expect("Couldn't parse rule.")
 }
-
-// option_bind(range, parse_range)
 
 fn parse_range(range: &str) -> Range {
     let mut itr = range.split("-");

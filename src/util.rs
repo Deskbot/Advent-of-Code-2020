@@ -1,9 +1,11 @@
 pub fn both<T,U>(opt1: Option<T>, opt2: Option<U>) -> Option<(T,U)> {
     if opt1.is_none() {
+        println!("opt1 none");
         return None
     }
 
     if opt2.is_none() {
+        println!("opt2 none");
         return None
     }
 
@@ -19,9 +21,9 @@ where
     move |x| g(f(x))
 }
 
-pub fn option_bind<T,U>(opt: Option<T>, f: fn(T) -> U) -> Option<U> {
-    match opt {
-        Some(val) => Some(f(val)),
+pub fn option_bind<T,U>(opt: Option<T>, f: fn(T) -> Option<U>) -> Option<U> {
+    match opt.map(f) {
+        Some(val) => val,
         None => None,
     }
 }
