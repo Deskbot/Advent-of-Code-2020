@@ -50,7 +50,11 @@ pub fn day02() {
             .unwrap()
     });
 
-    things_to_test.filter(|(rule, password)| rule.test(password));
+    let matching_passwords = things_to_test
+        .filter(|(rule, password)| rule.test(password))
+        .count();
+
+    println!("Part 1: {}", matching_passwords);
 }
 
 fn parse_rule(rule: &str) -> Rule {
