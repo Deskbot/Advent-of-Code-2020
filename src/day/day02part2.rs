@@ -10,18 +10,19 @@ struct Rule {
 
 impl Rule {
     pub fn test(&self, password: &str) -> bool {
-        for &elf_index in &self.allowed_index {
+
+        let chars_in_pos = self.allowed_index.iter().map(|&elf_index| {
             let mut itr = password.chars();
 
             let index = elf_index - 1;
             let char_at_index = itr.nth(index as usize);
 
-            if char_at_index.is_some() && self.letter == char_at_index.unwrap() {
-                return true;
-            }
-        }
+            return char_at_index.is_some() && self.letter == char_at_index.unwrap();
+        });
 
-        return false;
+        let count_chars_in_pos = chars_in_pos.filter(|&b| b).count();
+
+        return count_chars_in_pos == 1;
     }
 }
 
