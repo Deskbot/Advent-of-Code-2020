@@ -77,8 +77,8 @@ fn parse_rule(rule: &str) -> Rule {
 
 fn parse_range(range: &str) -> Range {
     let mut itr = range.split("-");
-    let min = itr.nth(1).and_then(compose(str::parse::<i32>, Result::ok));
-    let max = itr.nth(2).and_then(compose(str::parse::<i32>, Result::ok));
+    let min = itr.next().and_then(compose(str::parse::<i32>, Result::ok));
+    let max = itr.next().and_then(compose(str::parse::<i32>, Result::ok));
 
     both(min, max)
         .and_then(|(min,max)| {
