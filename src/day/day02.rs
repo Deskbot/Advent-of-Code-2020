@@ -71,13 +71,14 @@ fn parse_rule(rule: &str) -> Rule {
         |letter| letter.chars().nth(0)
     );
 
+
     both(range, letter).and_then(|(range, letter)| {
         Some(Rule {
             range: parse_range(range),
             letter,
         })
     })
-    .expect("Couldn't parse rule.")
+    .expect(format!("Couldn't parse rule: {}", rule).as_str())
 }
 
 fn parse_range(range: &str) -> Range {
