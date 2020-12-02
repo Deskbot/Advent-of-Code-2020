@@ -11,9 +11,25 @@ struct Range {
     max: i32
 }
 
+impl Range {
+    pub fn contains(self, num: i32) -> bool {
+        num <= self.min && num >= self.max
+    }
+}
+
 struct Rule {
     range: Range,
     letter: char,
+}
+
+impl Rule {
+    pub fn test(self, password: &str) -> bool {
+        let num_matching_chars = password.chars()
+            .filter(|&c| c == self.letter)
+            .count();
+
+        self.range.contains(num_matching_chars as i32)
+    }
 }
 
 pub fn day02() {
@@ -32,6 +48,8 @@ pub fn day02() {
         both(parsed_rule, password)
             .and_then(|(parsed_rule, password)| Some((parsed_rule, password)))
     });
+
+    things_to_test.filter(|(rule, password)| rule.test(password));
 }
 
 fn parse_rule(rule: &str) -> Rule {
