@@ -22,8 +22,8 @@ where
 }
 
 pub fn option_bind<T,U>(opt: Option<T>, f: fn(T) -> Option<U>) -> Option<U> {
-    match opt.map(f) {
-        Some(val) => val,
+    match opt {
+        Some(val) => f(val),
         None => None,
     }
 }

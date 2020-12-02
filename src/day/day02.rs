@@ -40,8 +40,8 @@ pub fn day02() {
 
     let things_to_test = lines.map(|line| {
         let mut itr = line.split(": ");
-        let rule = itr.nth(0);
-        let password = itr.nth(1);
+        let rule = itr.next();
+        let password = itr.next();
 
         let parsed_rule = rule.map(parse_rule);
 
@@ -60,17 +60,11 @@ pub fn day02() {
 fn parse_rule(rule: &str) -> Rule {
     let mut itr = rule.split(" ");
 
-    println!("{}", rule);
-
-    let range = itr.nth(0);
-
-    println!("poop {}", itr.clone().count());
-
+    let range = itr.next();
     let letter = option_bind(
-        itr.nth(1),
+        itr.next(),
         |letter| letter.chars().nth(0)
     );
-
 
     both(range, letter).and_then(|(range, letter)| {
         Some(Rule {
