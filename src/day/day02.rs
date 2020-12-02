@@ -2,7 +2,6 @@ use std::fs;
 
 use crate::util::{
     both,
-    compose,
     option_bind,
 };
 
