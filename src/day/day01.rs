@@ -1,7 +1,7 @@
 use std::fs;
 
 pub fn day01() {
-    let numbers = fs::read_to_string("src/input/day01.txt")
+    let numbers = fs::read_to_string("input/day01.txt")
         .expect("input not found")
         .lines()
         .map(|line| line.parse::<i32>().unwrap())
