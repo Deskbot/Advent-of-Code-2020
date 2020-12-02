@@ -1,6 +1,7 @@
 use std::env;
 
 mod day;
+mod util;
 
 use day::{
     day01::*,
