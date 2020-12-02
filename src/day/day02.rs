@@ -87,5 +87,5 @@ fn parse_range(range: &str) -> Range {
                 max,
             })
         })
-        .expect("Couldn't parse range.")
+        .expect(format!("Couldn't parse range: {}", range).as_str())
 }
