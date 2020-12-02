@@ -48,15 +48,18 @@ pub fn day02() {
 }
 
 fn test_line(line: &str) -> bool {
+    let (rule, password) = input_to_test(line);
+    return rule.test(password);
+}
+
+fn input_to_test(line: &str) -> (Rule, &str) {
     let mut itr = line.split(": ");
     let rule = itr.next();
     let password = itr.next();
 
     let parsed_rule = rule.map(parse_rule);
 
-    both(parsed_rule, password)
-        .and_then(|(rule, password)| Some(rule.test(password)))
-        .unwrap()
+    both(parsed_rule, password).unwrap()
 }
 
 fn parse_rule(rule: &str) -> Rule {
