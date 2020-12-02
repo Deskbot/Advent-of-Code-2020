@@ -39,9 +39,9 @@ pub fn day02() {
     let mut lines = file.lines();
 
     let things_to_test = lines.map(|line| {
-        let mut poop = line.split(": ");
-        let rule = poop.nth(0);
-        let password = poop.nth(1);
+        let mut itr = line.split(": ");
+        let rule = itr.nth(0);
+        let password = itr.nth(1);
 
         let parsed_rule = option_bind(rule, |rule| parse_rule(rule));
 
