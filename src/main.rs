@@ -6,6 +6,7 @@ mod util;
 use day::{
     day01::*,
     day02::*,
+    day03::*,
 };
 
 fn main() {
@@ -24,6 +25,7 @@ fn run_day(day: u8) {
     let days = [
         day01,
         day02,
+        day03,
     ];
 
     let day_index = (day - 1) as usize;
