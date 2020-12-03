@@ -27,17 +27,24 @@ pub fn day03() {
     let file = fs::read_to_string("input/day03.txt")
         .expect("input not found");
 
-    let trees = part1(&file);
+    let trees = trees_hit(&file, &Point::new(3,1));
     println!("Part 1: {}", trees);
+
+    let trees = trees_hit(&file, &Point::new(1,1))
+        * trees_hit(&file, &Point::new(3,1))
+        * trees_hit(&file, &Point::new(5,1))
+        * trees_hit(&file, &Point::new(7,1))
+        * trees_hit(&file, &Point::new(1,2));
+
+    println!("Part 2: {}", trees);
 }
 
-fn part1(input: &str) -> i32 {
+fn trees_hit(input: &str, movement: &Point) -> i64 {
     let grid = input.lines().collect::<Vec<&str>>();
     let height = grid.len() as i32;
     let width = grid.get(0).unwrap().len() as i32;
 
     let start = Point::new(0, 0);
-    let movement = Point::new(3,1);
 
     let mut pos = start;
     let mut trees = 0;
@@ -66,9 +73,8 @@ fn is_tree(c: char) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    #[test]
-    fn part1_example() {
-       let example_input = "\
+
+    const EXAMPLE_INPUT: &str = "\
         ..##.......\n\
         #...#...#..\n\
         .#....#..#.\n\
@@ -81,6 +87,20 @@ mod tests {
         #...##....#\n\
         .#..#...#.#\n";
 
-        assert_eq!(part1(example_input), 7);
+    #[test]
+    fn part1_example() {
+        assert_eq!(trees_hit(EXAMPLE_INPUT, &Point::new(3,1)), 7);
+    }
+
+    #[test]
+    fn part2_example() {
+        assert_eq!(
+            trees_hit(EXAMPLE_INPUT, &Point::new(1,1))
+            * trees_hit(EXAMPLE_INPUT, &Point::new(3,1))
+            * trees_hit(EXAMPLE_INPUT, &Point::new(5,1))
+            * trees_hit(EXAMPLE_INPUT, &Point::new(7,1))
+            * trees_hit(EXAMPLE_INPUT, &Point::new(1,2)),
+            336
+        );
     }
 }
