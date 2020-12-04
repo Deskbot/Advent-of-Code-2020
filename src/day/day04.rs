@@ -134,7 +134,7 @@ fn validate_ecl(val: &str) -> bool {
 }
 
 fn validate_pid(val: &str) -> bool {
-    let re = Regex::new("0*[0-9]*").unwrap();
+    let re = Regex::new("^[0-9]{9}$").unwrap();
     return re.is_match(val);
 }
 
@@ -209,5 +209,22 @@ hgt:179cm";
 hcl:#cfa07d eyr:2025 pid:166559648
 iyr:2011 ecl:brn hgt:59in";
         assert!(!validate_passport_part1(input));
+    }
+
+    #[test]
+    fn field_validation() {
+        assert!(validate_byr("2002"));
+        assert!(!validate_byr("2003"));
+        assert!(validate_hgt("60in"));
+        assert!(validate_hgt("190cm"));
+        assert!(!validate_hgt("190in"));
+        assert!(!validate_hgt("190"));
+        assert!(validate_hcl("#123abc"));
+        assert!(!validate_hcl("#123abz"));
+        assert!(!validate_hcl("123abc"));
+        assert!(validate_ecl("brn"));
+        assert!(!validate_ecl("wat"));
+        assert!(validate_pid("000000001"));
+        assert!(!validate_pid("0123456789"));
     }
 }
