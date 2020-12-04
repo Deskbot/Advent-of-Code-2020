@@ -5,6 +5,7 @@ name = "advent_of_code_2020"
 version = "0.1.0"
 dependencies = [
  "regex",
+ "substring",
 ]
 
 [[package]]
@@ -15,6 +16,12 @@ checksum = "7404febffaa47dac81aa44dba71523c9d069b1bdc50a77db41195149e17f68e5"
 dependencies = [
  "memchr",
 ]
+
+[[package]]
+name = "autocfg"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cdb031dd78e28731d87d56cc8ffef4a8f36ca26c38fe2de700543e627f8a464a"
 
 [[package]]
 name = "lazy_static"
@@ -45,6 +52,15 @@ name = "regex-syntax"
 version = "0.6.21"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3b181ba2dcf07aaccad5448e8ead58db5b742cf85dfe035e2227f137a539a189"
+
+[[package]]
+name = "substring"
+version = "1.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "134bb6744b6f5e4cf735bf590fd987c710600fb95db9af3be36491dea326b69b"
+dependencies = [
+ "autocfg",
+]
 
 [[package]]
 name = "thread_local"
