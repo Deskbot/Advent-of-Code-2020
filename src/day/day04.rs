@@ -39,13 +39,8 @@ fn validate_fields(fields: &Vec<&str>) -> bool {
     ].iter().cloned().collect();
 
     for item in need {
-        let mut found = false;
-        for field in fields {
-            if field.starts_with(item) {
-                found = true;
-                break;
-            }
-        }
+        let found = fields.iter()
+            .any(|field| field.starts_with(item));
 
         if found == false {
             return false;
