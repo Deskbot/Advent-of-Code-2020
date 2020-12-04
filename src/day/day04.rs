@@ -1,4 +1,3 @@
-use std::collections::HashSet;
 use std::fs;
 use regex::Regex;
 use substring::Substring;
@@ -39,17 +38,9 @@ fn split_passport_into_fields(passport: &str) -> Vec<&str> {
 }
 
 fn validate_field_presence(fields: &Vec<&str>) -> bool {
-    let need: HashSet<&'static str> = [
-        "byr",
-        "iyr",
-        "eyr",
-        "hgt",
-        "hcl",
-        "ecl",
-        "pid",
-    ].iter().cloned().collect();
+    let need = ["byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid"];
 
-    for item in need {
+    for item in need.iter() {
         let found = fields.iter()
             .any(|field| field.starts_with(item));
 
