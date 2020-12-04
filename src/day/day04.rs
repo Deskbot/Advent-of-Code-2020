@@ -14,8 +14,8 @@ pub fn day04() {
 fn part1(file: &str) -> usize {
     let passports = split_into_passports(&file);
 
-    let valid_passports = passports.iter()
-        .map(|passport| validate_passport_part1(passport));
+    let valid_passports = passports.into_iter()
+        .map(validate_passport_part1);
 
     return valid_passports.filter(|&b| b).count();
 }
@@ -23,8 +23,8 @@ fn part1(file: &str) -> usize {
 fn part2(file: &str) -> usize {
     let passports = split_into_passports(&file);
 
-    let valid_passports = passports.iter()
-        .map(|passport| validate_passport_part2(passport));
+    let valid_passports = passports.into_iter()
+        .map(validate_passport_part2);
 
     return valid_passports.filter(|&b| b).count();
 }
