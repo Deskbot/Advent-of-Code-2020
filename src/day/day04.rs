@@ -76,8 +76,16 @@ hcl:#cfa07d eyr:2025 pid:166559648
 iyr:2011 ecl:brn hgt:59in";
 
     #[test]
+    fn part1() {
+        let file = fs::read_to_string("input/day04.txt")
+        .expect("input not found");
+
+        assert_eq!(super::part1(&file), 202);
+    }
+
+    #[test]
     fn part1_example() {
-        assert_eq!(part1(EXAMPLE_INPUT), 2);
+        assert_eq!(super::part1(EXAMPLE_INPUT), 2);
     }
 
     #[test]
