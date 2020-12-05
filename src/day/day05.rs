@@ -1,8 +1,9 @@
+use std::cmp::{Ord, Ordering, PartialOrd};
 use std::fs;
 use substring::Substring;
 
 const THE_NUMBER_2_AS_AN_I32: i32 = 2;
-
+#[derive(Eq)]
 struct Seat {
     col: i32,
     row: i32,
@@ -52,12 +53,30 @@ impl Seat {
     }
 }
 
+impl PartialEq for Seat {
+    fn eq(&self, other: &Self) -> bool {
+        self.id().eq(&other.id())
+    }
+}
+
+impl PartialOrd for Seat {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.id().partial_cmp(&other.id())
+    }
+}
+
+impl Ord for Seat {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.id().cmp(&other.id())
+    }
+}
+
 pub fn day05() {
     let file = fs::read_to_string("input/day05.txt")
         .expect("input not found");
 
     println!("Part 1: {}", part1(&file));
-    // println!("Part 2: {}", part2(&file));
+    println!("Part 2: {}", part2(&file));
 }
 
 fn part1(file: &str) -> i32 {
@@ -66,6 +85,29 @@ fn part1(file: &str) -> i32 {
         .map(|seat| seat.id())
         .max()
         .unwrap()
+}
+
+fn part2(file: &str) -> i32 {
+    let mut seat_ids = file.lines()
+        .map(Seat::from_str)
+        .map(|seat| seat.id())
+        .collect::<Vec<i32>>();
+
+    seat_ids.sort();
+
+    println!("{:?}", seat_ids);
+
+    for i in 1..(seat_ids.len() - 2) {
+        let prev_id = &seat_ids[i-1];
+        let &id = &seat_ids[i];
+        let next_id = &seat_ids[i+1];
+
+        if prev_id + 1 != id || next_id - 1 != id {
+            return id;
+        }
+    }
+
+    panic!("poop");
 }
 
 
