@@ -95,15 +95,17 @@ fn part2(file: &str) -> i32 {
 
     seat_ids.sort();
 
-    println!("{:?}", seat_ids);
-
     for i in 1..(seat_ids.len() - 2) {
-        let prev_id = &seat_ids[i-1];
+        let &prev_id = &seat_ids[i-1];
         let &id = &seat_ids[i];
-        let next_id = &seat_ids[i+1];
+        let &next_id = &seat_ids[i+1];
 
-        if prev_id + 1 != id || next_id - 1 != id {
-            return id;
+        if prev_id != id - 1 {
+            return id - 1;
+        }
+
+        if next_id != id + 1 {
+            return id + 1;
         }
     }
 
