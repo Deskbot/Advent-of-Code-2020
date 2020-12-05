@@ -1,9 +1,8 @@
-use std::cmp::{Ord, Ordering, PartialOrd};
 use std::fs;
 use substring::Substring;
 
 const THE_NUMBER_2_AS_AN_I32: i32 = 2;
-#[derive(Eq)]
+
 struct Seat {
     col: i32,
     row: i32,
@@ -50,24 +49,6 @@ impl Seat {
         assert_eq!(min, max);
 
         return min;
-    }
-}
-
-impl PartialEq for Seat {
-    fn eq(&self, other: &Self) -> bool {
-        self.id().eq(&other.id())
-    }
-}
-
-impl PartialOrd for Seat {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        self.id().partial_cmp(&other.id())
-    }
-}
-
-impl Ord for Seat {
-    fn cmp(&self, other: &Self) -> Ordering {
-        self.id().cmp(&other.id())
     }
 }
 
