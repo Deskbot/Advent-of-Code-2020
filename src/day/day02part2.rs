@@ -11,7 +11,7 @@ struct Rule {
 impl Rule {
     pub fn test(&self, password: &str) -> bool {
 
-        let chars_in_pos = self.allowed_index.iter().map(|&elf_index| {
+        let chars_in_pos = self.allowed_index.iter().filter(|&elf_index| {
             let mut itr = password.chars();
 
             let index = elf_index - 1;
@@ -20,9 +20,7 @@ impl Rule {
             return char_at_index.is_some() && self.letter == char_at_index.unwrap();
         });
 
-        let count_chars_in_pos = chars_in_pos.filter(|&b| b).count();
-
-        return count_chars_in_pos == 1;
+        return chars_in_pos.count() == 1;
     }
 }
 

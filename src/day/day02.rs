@@ -10,21 +10,14 @@ pub fn day02() {
     let lines = file.lines();
 
     {
-        let things_to_test = lines.clone().map(day02part1::test_line);
+        let matching_passwords = lines.clone().filter(|line| day02part1::test_line(line));
 
-        let matching_passwords = things_to_test
-            .filter(|&b| b)
-            .count();
-
-        println!("Part 1: {}", matching_passwords);
+        println!("Part 1: {}", matching_passwords.count());
     }
 
     {
-        let things_to_test = lines.map(day02part2::test_line);
-        let matching_passwords = things_to_test
-            .filter(|&b| b)
-            .count();
+        let matching_passwords = lines.filter(|line| day02part2::test_line(line));
 
-        println!("Part 2: {}", matching_passwords);
+        println!("Part 2: {}", matching_passwords.count());
     }
 }

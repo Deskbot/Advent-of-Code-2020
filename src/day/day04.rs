@@ -14,18 +14,18 @@ fn part1(file: &str) -> usize {
     let passports = split_into_passports(&file);
 
     let valid_passports = passports.into_iter()
-        .map(validate_passport_part1);
+        .filter(|passport| validate_passport_part1(passport));
 
-    return valid_passports.filter(|&b| b).count();
+    return valid_passports.count();
 }
 
 fn part2(file: &str) -> usize {
     let passports = split_into_passports(&file);
 
     let valid_passports = passports.into_iter()
-        .map(validate_passport_part2);
+        .filter(|passport| validate_passport_part2(passport));
 
-    return valid_passports.filter(|&b| b).count();
+    return valid_passports.count();
 }
 
 fn split_into_passports(file: &str) -> Vec<&str> {
@@ -70,9 +70,7 @@ fn validate_field(field: &str) -> bool {
 
 fn validate_fields(fields: &Vec<&str>) -> bool {
     fields.iter()
-        .map(|field| validate_field(field))
-        .all(|b| b)
-
+        .all(|field| validate_field(field))
 }
 
 fn split_field(field: &str) -> (&str, &str) {
