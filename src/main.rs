@@ -10,6 +10,7 @@ use day::{
     day04::*,
     day05::*,
     day06::*,
+    day07::*,
 };
 
 fn main() {
@@ -32,6 +33,7 @@ fn run_day(day: u8) {
         day04,
         day05,
         day06,
+        day07,
     ];
 
     let day_index = (day - 1) as usize;

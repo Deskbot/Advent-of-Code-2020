@@ -1,20 +1,8 @@
+use std::collections::HashMap;
 use std::fs;
+use substring::Substring;
 
-struct Bag<'a> {
-    contains: Vec<&'a str>,
-}
-
-static mut last_colour_id: i32 = 0;
-
-impl Bag<'_> {
-    pub fn new<'a>(bags: Vec<&'a str>) -> Bag<'a> {
-        Bag { contains: bags }
-    }
-
-    pub fn contains(bag: &Bag) -> bool {}
-}
-
-pub fn day06() {
+pub fn day07() {
     let file = fs::read_to_string("input/day07.txt").expect("input not found");
 
     println!("Part 1: {}", part1(&file));
@@ -22,15 +10,65 @@ pub fn day06() {
 }
 
 fn part1(input: &str) -> i32 {
-    // split by line
-    // split by " bags contain "
-    // left is holding bag
-    // right is bags held str
-    // split right by ", " to get a list of numbers of bags
-    // then split those strings by the first space
-    // left is the number of bags, right is the held bag colour (str ends with bag or bags)
+    let bag_rules = input
+        .lines()
+        .map(|line| {
+            let mut split = line.split(" contain ");
+            let bag = split.next().unwrap();
+            let rules = split.next().unwrap();
+
+            return (remove_last_word(bag), parse_rules(rules));
+        })
+        .collect::<HashMap<&str, Vec<&str>>>();
+
+    let mut contains_golden = HashMap::new() as HashMap<&str, bool>;
+
+    for bag in bag_rules.keys() {
+        let poop = bag_rules
+            .get(bag)
+            .unwrap();
+
+        println!("{}, {:?}", bag, poop);
+
+
+        let bag_deep_contains_golden = bag_rules
+            .get(bag)
+            .unwrap()
+            .iter()
+            .any(|&bag| *contains_golden.get(bag).unwrap_or(&false));
+
+        contains_golden.insert(bag, bag_deep_contains_golden);
+    }
+
+    return contains_golden
+        .values()
+        .filter(|&&b| b)
+        .count() as i32;
 }
 
 // fn part2(input: &str) -> i32 {
 
 // }
+
+fn parse_rules(rules: &str) -> Vec<&str> {
+    if rules == "no other bags." {
+        return Vec::new();
+    }
+
+    // remove the trailing full-stop
+    let rules = rules.substring(0, rules.len() - 1);
+
+    return rules
+        .split(", ")
+        .map(|rule| {
+            let space = rule.find(" ").unwrap();
+            let non_number_part = rule.substring(space + 1, rule.len());
+            return remove_last_word(non_number_part);
+        })
+        .collect();
+}
+
+fn remove_last_word(string: &str) -> &str {
+    let last_space = string.rfind(" ").unwrap();
+    return string.substring(0, last_space);
+}
