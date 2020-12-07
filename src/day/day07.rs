@@ -2,40 +2,6 @@ use std::collections::HashMap;
 use std::fs;
 use substring::Substring;
 
-struct Bag<'a> {
-    contains: Vec<&'a Bag<'a>>,
-    colour: &'a str,
-}
-
-impl Bag<'_> {
-    fn make_many<'a>(graph: &HashMap<&str, &Vec<&str>>) -> Vec<Bag<'a>> {
-        graph.iter().map(|(colour, contains)| {
-            Bag {
-                colour,
-                contains: Self::make_many_2(graph, contains)
-            }
-        });
-
-        return Vec::new();
-    }
-
-    fn make_many_2<'a>(memo: &'a mut HashMap<&str, Bag>, graph: &'a HashMap<&str, &Vec<&str>>, colour: &'a str) -> &'a Bag<'a> {
-        let already_computed = memo.get(colour);
-        if already_computed.is_some() {
-            return already_computed.unwrap();
-        }
-
-        let &contains = graph.get(colour).unwrap();
-
-        return &Bag {
-            colour: colour,
-            contains: contains.into_iter()
-                .map(|colour| Self::make_many_2(memo, graph, colour))
-                .collect(),
-        }
-    }
-}
-
 pub fn day07() {
     let file = fs::read_to_string("input/day07.txt").expect("input not found");
 
@@ -44,7 +10,7 @@ pub fn day07() {
 }
 
 fn part1(input: &str) -> i32 {
-    let bag_rules = input
+    let bag_to_rules = input
         .lines()
         .map(|line| {
             let mut split = line.split(" contain ");
@@ -57,12 +23,8 @@ fn part1(input: &str) -> i32 {
 
     let mut contains_golden = HashMap::new() as HashMap<&str, bool>;
 
-    for &bag in bag_rules.keys() {
-        let bag_deep_contains_golden = bag_rules
-            .get(bag)
-            .unwrap()
-            .iter()
-            .any(|&rule| rule == "shiny gold" || *contains_golden.get(bag).unwrap_or(&false));
+    for &bag in bag_to_rules.keys() {
+        let bag_deep_contains_golden = must_contain(bag, &bag_to_rules, &contains_golden);
 
         contains_golden.insert(bag, bag_deep_contains_golden);
 
@@ -75,12 +37,22 @@ fn part1(input: &str) -> i32 {
         .count() as i32;
 }
 
-fn must_contain(container: &str, memo: HashMap<&str, bool>) -> bool {
-    if container == "shiny gold" {
-        return true;
-    }
+fn must_contain(bag: &str, bag_to_rules: &HashMap<&str, std::vec::Vec<&str>>, memo: &HashMap<&str, bool>) -> bool {
+    return bag_to_rules
+        .get(bag)
+        .unwrap()
+        .iter()
+        .any(|&rule| {
+            if rule == "shiny gold" {
+                return true;
+            }
 
-    memo.get
+            if let Some(&this_was_less_annoying_than_unwrap_or_else) = memo.get(bag) {
+                return this_was_less_annoying_than_unwrap_or_else;
+            }
+
+            return must_contain(rule, bag_to_rules, memo);
+        });
 }
 
 // fn part2(input: &str) -> i32 {
