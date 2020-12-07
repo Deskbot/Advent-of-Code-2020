@@ -99,7 +99,7 @@ mod tests {
 
     #[test]
     fn part1_example() {
-        assert_eq!(part1(EXAMPLE_INPUT), 357);
+        assert_eq!(part1(EXAMPLE_INPUT), 4);
     }
 
     #[test]
