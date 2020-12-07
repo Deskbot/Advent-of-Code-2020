@@ -2,6 +2,7 @@ use std::collections::HashMap;
 use std::fs;
 use substring::Substring;
 
+#[derive(std::fmt::Debug)]
 struct Rule<'a> (i32, &'a str);
 
 pub fn day07() {
@@ -64,10 +65,12 @@ fn contains(colour: &str, bag_to_rules: &HashMap<&str, Vec<Rule>>, /*memo: &mut 
         .unwrap()
         .into_iter();
 
-    let inner_bags = rules.clone().count() as i32;
-    let deeper_bags = rules.map(|Rule(count, colour)| count * contains(colour, bag_to_rules, /*memo*/));
+    let poop = rules.map(|Rule(rule_count, rule_colour)| {
+        return rule_count // this many bags directly inside
+            + rule_count * contains(rule_colour, bag_to_rules, /*memo*/) // and each of those bags contains bags
+    });
 
-    return inner_bags + deeper_bags.fold(0, |sum, next| sum + next);
+    return poop.fold(0, |sum, next| sum + next);
 }
 
 fn parse_input(input: &str) -> HashMap<&str, Vec<Rule>>{
@@ -95,7 +98,7 @@ fn parse_rules(rules: &str) -> Vec<Rule> {
         .split(", ")
         .map(|rule| {
             let space = rule.find(" ").unwrap();
-            let number = rules.substring(0, space).parse::<i32>().unwrap();
+            let number = rule.substring(0, space).parse::<i32>().unwrap();
             let non_number_part = rule.substring(space + 1, rule.len());
             return Rule(number, remove_last_word(non_number_part));
         })
@@ -135,13 +138,29 @@ mod tests {
         assert_eq!(part1(EXAMPLE_INPUT), 4);
     }
 
-     #[test]
-    fn part2_example() {
+    #[test]
+    fn part2_example_1() {
+        assert_eq!(part2(EXAMPLE_INPUT), 32);
+    }
+
+    #[test]
+    fn part2_example_2() {
         assert_eq!(part2(EXAMPLE_PART2_INPUT), 126);
     }
 
     #[test]
     fn test() {
         assert_eq!(part1("bright white bags contain 1 shiny gold bag.\n"), 1);
+    }
+
+    #[test]
+    fn test2() {
+        let bag_to_rules = parse_input(EXAMPLE_INPUT);
+
+        assert_eq!(contains("faded blue", &bag_to_rules), 0);
+        assert_eq!(contains("dotted black", &bag_to_rules), 0);
+        assert_eq!(contains("dark olive", &bag_to_rules), 7);
+        assert_eq!(contains("vibrant plum", &bag_to_rules), 11);
+        assert_eq!(contains("shiny gold", &bag_to_rules), 32);
     }
 }
