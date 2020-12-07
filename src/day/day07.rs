@@ -25,10 +25,7 @@ fn part1(input: &str) -> i32 {
 
     for &bag in bag_to_rules.keys() {
         let bag_deep_contains_golden = must_contain(bag, &bag_to_rules, &contains_golden);
-
         contains_golden.insert(bag, bag_deep_contains_golden);
-
-        println!("{} {}", bag, bag_deep_contains_golden);
     }
 
     return contains_golden
