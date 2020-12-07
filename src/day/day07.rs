@@ -23,21 +23,16 @@ fn part1(input: &str) -> i32 {
 
     let mut contains_golden = HashMap::new() as HashMap<&str, bool>;
 
-    for bag in bag_rules.keys() {
-        let poop = bag_rules
-            .get(bag)
-            .unwrap();
-
-        println!("{}, {:?}", bag, poop);
-
-
+    for &bag in bag_rules.keys() {
         let bag_deep_contains_golden = bag_rules
             .get(bag)
             .unwrap()
             .iter()
-            .any(|&bag| *contains_golden.get(bag).unwrap_or(&false));
+            .any(|&rule| rule == "shiny gold" || *contains_golden.get(bag).unwrap_or(&false));
 
         contains_golden.insert(bag, bag_deep_contains_golden);
+
+        println!("{} {}", bag, bag_deep_contains_golden);
     }
 
     return contains_golden
@@ -71,4 +66,30 @@ fn parse_rules(rules: &str) -> Vec<&str> {
 fn remove_last_word(string: &str) -> &str {
     let last_space = string.rfind(" ").unwrap();
     return string.substring(0, last_space);
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_INPUT: &str = "light red bags contain 1 bright white bag, 2 muted yellow bags.\n\
+                                dark orange bags contain 3 bright white bags, 4 muted yellow bags.\n\
+                                bright white bags contain 1 shiny gold bag.\n\
+                                muted yellow bags contain 2 shiny gold bags, 9 faded blue bags.\n\
+                                shiny gold bags contain 1 dark olive bag, 2 vibrant plum bags.\n\
+                                dark olive bags contain 3 faded blue bags, 4 dotted black bags.\n\
+                                vibrant plum bags contain 5 faded blue bags, 6 dotted black bags.\n\
+                                faded blue bags contain no other bags.\n\
+                                dotted black bags contain no other bags.";
+
+    #[test]
+    fn part1_example() {
+        assert_eq!(part1(EXAMPLE_INPUT), 357);
+    }
+
+    #[test]
+    fn test() {
+        assert_eq!(part1("bright white bags contain 1 shiny gold bag.\n"), 1);
+    }
 }
