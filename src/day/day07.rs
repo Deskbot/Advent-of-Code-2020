@@ -2,6 +2,40 @@ use std::collections::HashMap;
 use std::fs;
 use substring::Substring;
 
+struct Bag<'a> {
+    contains: Vec<&'a Bag<'a>>,
+    colour: &'a str,
+}
+
+impl Bag<'_> {
+    fn make_many<'a>(graph: &HashMap<&str, &Vec<&str>>) -> Vec<Bag<'a>> {
+        graph.iter().map(|(colour, contains)| {
+            Bag {
+                colour,
+                contains: Self::make_many_2(graph, contains)
+            }
+        });
+
+        return Vec::new();
+    }
+
+    fn make_many_2<'a>(memo: &'a mut HashMap<&str, Bag>, graph: &'a HashMap<&str, &Vec<&str>>, colour: &'a str) -> &'a Bag<'a> {
+        let already_computed = memo.get(colour);
+        if already_computed.is_some() {
+            return already_computed.unwrap();
+        }
+
+        let &contains = graph.get(colour).unwrap();
+
+        return &Bag {
+            colour: colour,
+            contains: contains.into_iter()
+                .map(|colour| Self::make_many_2(memo, graph, colour))
+                .collect(),
+        }
+    }
+}
+
 pub fn day07() {
     let file = fs::read_to_string("input/day07.txt").expect("input not found");
 
@@ -39,6 +73,14 @@ fn part1(input: &str) -> i32 {
         .values()
         .filter(|&&b| b)
         .count() as i32;
+}
+
+fn must_contain(container: &str, memo: HashMap<&str, bool>) -> bool {
+    if container == "shiny gold" {
+        return true;
+    }
+
+    memo.get
 }
 
 // fn part2(input: &str) -> i32 {
