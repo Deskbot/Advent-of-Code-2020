@@ -1,5 +1,6 @@
 use std::env;
 
+mod console;
 mod day;
 mod util;
 
@@ -11,6 +12,7 @@ use day::{
     day05::*,
     day06::*,
     day07::*,
+    day08::*,
 };
 
 fn main() {
@@ -34,6 +36,7 @@ fn run_day(day: u8) {
         day05,
         day06,
         day07,
+        day08,
     ];
 
     let day_index = (day - 1) as usize;
