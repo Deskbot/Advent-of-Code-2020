@@ -18,11 +18,7 @@ fn part1(input: &str) -> i32 {
 
     let mut prev_addresses = HashSet::new();
 
-    loop {
-        if prev_addresses.contains(&machine.address) {
-            break;
-        }
-
+    while !prev_addresses.contains(&machine.address) {
         prev_addresses.insert(machine.address);
         machine.step();
     }
