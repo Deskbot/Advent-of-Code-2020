@@ -1,4 +1,7 @@
 
+use std::collections::HashSet;
+
+#[derive(Clone)]
 pub enum Instruction {
     Acc(i32),
     Jmp(i32),
@@ -16,22 +19,50 @@ impl Instruction {
     }
 }
 
+pub enum Exit {
+    InfiniteLoop,
+    Terminated(i32),
+}
+
+#[derive(Clone)]
 pub struct Console {
-    pub address: i32,
     pub accumulator: i32,
-    memory: Vec<Instruction>,
+    address: i32,
+    pub memory: Vec<Instruction>,
 }
 
 impl Console {
     pub fn new(instructions: Vec<Instruction>) -> Console {
         Console {
-            address: 0,
             accumulator: 0,
+            address: 0,
             memory: instructions
         }
     }
 
-    pub fn step(&mut self) {
+    pub fn hack(&mut self, address: usize, value: Instruction) {
+        self.memory[address] = value;
+    }
+
+    pub fn run(&mut self) -> Exit {
+        let mut prev_addresses = HashSet::new();
+
+        loop {
+            if prev_addresses.contains(&self.address) {
+                return Exit::InfiniteLoop;
+            }
+
+            prev_addresses.insert(self.address);
+
+            let terminated = self.step();
+
+            if terminated {
+                return Exit::Terminated(self.accumulator);
+            }
+        }
+    }
+
+    pub fn step(&mut self) -> bool {
         use Instruction::*;
 
         let instruction = &self.memory[self.address as usize];
@@ -49,7 +80,9 @@ impl Console {
             Nop(_) => {
                 self.address += 1;
             }
-        }
+        };
+
+        return self.address >= self.memory.len() as i32;
     }
 }
 
