@@ -25,3 +25,14 @@ fn part1(input: &str) -> i32 {
 
     return machine.accumulator;
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn part1_example() {
+        let input = fs::read_to_string("input/day08.txt").expect("input not found");
+        assert_eq!(part1(&input), 1766);
+    }
+}
