@@ -46,10 +46,6 @@ fn part2(input: &str, target: i64) -> i64 {
             .take(end - start);
         let sum_of_range = range.clone().fold(0, |acc, i| acc + i);
 
-        println!("{}", range.len(), );
-        println!("{:?}", range,);
-        println!("{}", sum_of_range);
-
         if sum_of_range == target {
             // sum the smallest and largest
             let mut sorted_range = range.map(|&i| i).collect::<Vec<i64>>();
