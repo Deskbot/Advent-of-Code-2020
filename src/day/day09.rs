@@ -5,7 +5,7 @@ pub fn day09() {
     let file = fs::read_to_string("input/day09.txt").expect("input not found");
 
     println!("Part 1: {}", part1(&file, 25));
-    // println!("Part 2: {}", part2(&file));
+    println!("Part 2: {}", part2(&file, 552655238));
 }
 
 fn part1(input: &str, preamble_size: usize) -> i32 {
@@ -28,6 +28,44 @@ fn part1(input: &str, preamble_size: usize) -> i32 {
     }
 
     panic!("all numbers are valid");
+}
+
+fn part2(input: &str, target: i32) -> i32 {
+    let data_stream = input.lines()
+        .map(str::parse::<i32>)
+        .map(Result::unwrap)
+        .collect::<Vec<i32>>();
+
+    let mut start = 0;
+    let mut end = 1;
+
+    loop {
+        let range = data_stream
+            .iter()
+            .skip(start)
+            .take(end - start);
+        let sum_of_range = range.clone().fold(0, |acc, i| acc + i);
+
+        println!("{}", range.len(), );
+        println!("{:?}", range,);
+        println!("{}", sum_of_range);
+
+        if sum_of_range == target {
+            // sum the smallest and largest
+            let mut sorted_range = range.map(|&i| i).collect::<Vec<i32>>();
+            sorted_range.sort();
+
+            return sorted_range.first().unwrap() + sorted_range.last().unwrap();
+        }
+
+        if sum_of_range < target {
+            // adding more numbers will give a bigger sum
+            end += 1;
+        } else {
+            // adding less numbers will give a smaller sum
+            start += 1;
+        }
+    }
 }
 
 fn contains_sum_to(list: &mut [i32], target_sum: i32) -> bool {
@@ -86,7 +124,18 @@ mod tests {
 
     #[test]
     fn part1_example() {
-        assert_eq!(part1(EXAMPLE, 5), 127);
+        assert_eq!(super::part1(EXAMPLE, 5), 127);
+    }
+
+    #[test]
+    fn part1() {
+        let file = fs::read_to_string("input/day09.txt").expect("input not found");
+        assert_eq!(super::part1(&file, 25), 552655238);
+    }
+
+    #[test]
+    fn part2_example() {
+        assert_eq!(super::part2(EXAMPLE, 127), 62);
     }
 
     #[test]
