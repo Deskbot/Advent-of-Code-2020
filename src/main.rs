@@ -13,6 +13,7 @@ use day::{
     day06::*,
     day07::*,
     day08::*,
+    day09::*,
 };
 
 fn main() {
@@ -20,14 +21,14 @@ fn main() {
 
     match args.nth(1) {
         Some(day) => {
-            let day_num = day.parse::<u8>().expect("Invalid day given.");
+            let day_num = day.parse::<usize>().expect("Invalid day given.");
             run_day(day_num);
         },
         None => panic!("No day given"),
     }
 }
 
-fn run_day(day: u8) {
+fn run_day(day: usize) {
     let days = [
         day01,
         day02,
@@ -37,9 +38,10 @@ fn run_day(day: u8) {
         day06,
         day07,
         day08,
+        day09,
     ];
 
-    let day_index = (day - 1) as usize;
+    let day_index = day - 1;
     let day_func = days.get(day_index).expect("Invalid day given.");
 
     println!("Day {}", day);
