@@ -57,10 +57,10 @@ fn part2(input: &str) -> i32 {
 
     // get accumulator of the first hacked machine that terminates
     for mut machine in machines_to_test {
-        let result = machine.run();
+        let exit_code = machine.run();
 
-        if let Exit::Terminated(_) = result {
-            return machine.accumulator;
+        if let Exit::Terminated(result) = exit_code {
+            return result;
         }
     }
 
