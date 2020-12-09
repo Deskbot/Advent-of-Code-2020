@@ -30,11 +30,11 @@ fn part1(input: &str, preamble_size: usize) -> i32 {
     panic!("all numbers are valid");
 }
 
-fn part2(input: &str, target: i32) -> i32 {
+fn part2(input: &str, target: i64) -> i64 {
     let data_stream = input.lines()
-        .map(str::parse::<i32>)
+        .map(str::parse::<i64>)
         .map(Result::unwrap)
-        .collect::<Vec<i32>>();
+        .collect::<Vec<i64>>();
 
     let mut start = 0;
     let mut end = 1;
@@ -52,7 +52,7 @@ fn part2(input: &str, target: i32) -> i32 {
 
         if sum_of_range == target {
             // sum the smallest and largest
-            let mut sorted_range = range.map(|&i| i).collect::<Vec<i32>>();
+            let mut sorted_range = range.map(|&i| i).collect::<Vec<i64>>();
             sorted_range.sort();
 
             return sorted_range.first().unwrap() + sorted_range.last().unwrap();
