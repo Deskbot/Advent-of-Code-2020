@@ -8,12 +8,30 @@ pub fn day10() {
 }
 
 fn part1(input: &str) -> i32 {
-    let chargers = input
+    let mut chargers = input
         .lines()
         .map(str::parse::<i32>)
         .map(Result::unwrap)
-        .collect::<Vec<i32>>()
-        .sort();
+        .collect::<Vec<i32>>();
 
-    0
+    chargers.sort();
+
+    let mut diffs_of_1 = 0;
+    let mut diffs_of_3 = 0;
+
+    for pair in chargers.windows(2) {
+        let diff = pair[1] - pair[0];
+
+        if diff == 1 {
+            diffs_of_1 += 1;
+        } else if diff == 3 {
+            diffs_of_3 += 1;
+        } else if diff > 3 {
+            panic!("You misunderstood the question.")
+        }
+
+        // else ignore and continue;
+    }
+
+    return diffs_of_1 * diffs_of_3;
 }
