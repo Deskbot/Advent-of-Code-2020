@@ -3,26 +3,13 @@ use std::fs;
 pub fn day10() {
     let file = fs::read_to_string("input/day10.txt").expect("input not found");
 
-    println!("Part 1: {}", part1(&file));
-    // println!("Part 2: {}", part2(&file, 552655238));
+    let joltages = input_to_joltages(&file);
+
+    println!("Part 1: {}", part1(&joltages));
+    println!("Part 2: {}", part2(&joltages));
 }
 
-fn part1(input: &str) -> i32 {
-    let mut joltages = input
-        .lines()
-        .map(str::parse::<i32>)
-        .map(Result::unwrap)
-        .collect::<Vec<i32>>();
-
-    // add the socket
-    joltages.insert(0, 0);
-
-    joltages.sort();
-
-    // add my device
-    let &biggest_charger = joltages.last().unwrap();
-    joltages.push(biggest_charger + 3);
-
+fn part1(joltages: &Vec<i32>) -> i32 {
     let mut diffs_of_1 = 0;
     let mut diffs_of_3 = 0;
 
@@ -43,10 +30,33 @@ fn part1(input: &str) -> i32 {
     return diffs_of_1 * diffs_of_3;
 }
 
+fn part2(input: &Vec<i32>) -> i32 {
+    0
+}
+
+fn input_to_joltages(input: &str) -> Vec<i32> {
+    let mut joltages = input
+        .lines()
+        .map(str::parse::<i32>)
+        .map(Result::unwrap)
+        .collect::<Vec<i32>>();
+
+    // add the socket
+    joltages.insert(0, 0);
+
+    joltages.sort();
+
+    // add my device
+    let &biggest_charger = joltages.last().unwrap();
+    joltages.push(biggest_charger + 3);
+
+    return joltages;
+}
+
 
 #[cfg(test)]
 mod tests {
-    // use super::*;
+    use super::*;
 
     const EXAMPLE_1: &str = "16\n\
                              10\n\
@@ -94,12 +104,19 @@ mod tests {
 
     #[test]
     fn part1_example_1() {
-        assert_eq!(super::part1(EXAMPLE_1), 35);
+        assert_eq!(super::part1(&input_to_joltages(EXAMPLE_1)), 35);
     }
 
     #[test]
     fn part1_example_2() {
-        assert_eq!(super::part1(EXAMPLE_2), 220);
+        assert_eq!(super::part1(&input_to_joltages(EXAMPLE_2)), 220);
+    }
+
+    #[test]
+    fn part1_answer() {
+        let file = fs::read_to_string("input/day10.txt").expect("input not found");
+        let joltages = input_to_joltages(&file);
+        assert_eq!(part1(&joltages), 2376);
     }
 }
 
