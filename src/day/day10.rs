@@ -15,6 +15,8 @@ fn part1(input: &str) -> i32 {
         .collect::<Vec<i32>>();
 
     chargers.sort();
+    let &biggest_charger = chargers.last().unwrap();
+    chargers.push(biggest_charger + 3);
 
     let mut diffs_of_1 = 0;
     let mut diffs_of_3 = 0;
@@ -33,5 +35,68 @@ fn part1(input: &str) -> i32 {
         // else ignore and continue;
     }
 
+    println!("{} {}", diffs_of_1, diffs_of_3);
+
     return diffs_of_1 * diffs_of_3;
 }
+
+
+#[cfg(test)]
+mod tests {
+    // use super::*;
+
+    const EXAMPLE_1: &str = "16\n\
+                             10\n\
+                             15\n\
+                              5\n\
+                              1\n\
+                             11\n\
+                              7\n\
+                             19\n\
+                              6\n\
+                             12\n\
+                              4\n";
+
+    const EXAMPLE_2: &str = "28\n\
+                             33\n\
+                             18\n\
+                             42\n\
+                             31\n\
+                             14\n\
+                             46\n\
+                             20\n\
+                             48\n\
+                             47\n\
+                             24\n\
+                             23\n\
+                             49\n\
+                             45\n\
+                             19\n\
+                             38\n\
+                             39\n\
+                             11\n\
+                              1\n\
+                             32\n\
+                             25\n\
+                             35\n\
+                              8\n\
+                             17\n\
+                              7\n\
+                              9\n\
+                              4\n\
+                              2\n\
+                             34\n\
+                             10\n\
+                              3\n";
+
+    #[test]
+    fn part1_example_1() {
+        assert_eq!(super::part1(EXAMPLE_1), 35);
+    }
+
+    #[test]
+    fn part1_example_2() {
+        assert_eq!(super::part1(EXAMPLE_2), 220);
+    }
+}
+
