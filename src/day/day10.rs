@@ -43,8 +43,6 @@ fn part2(joltages: &Vec<i64>) -> i64 {
             return (joltage, deps);
         });
 
-    // println!("{:?} ", joltage_dependencies.clone().collect::<Vec<(i64, Vec<i64>)>>());
-
     // strategy:
     // start with the larger adapters and memoise how many chains to my device can start with each adapter
     // no adapter will depend on a smaller adapter
@@ -56,16 +54,12 @@ fn part2(joltages: &Vec<i64>) -> i64 {
 
     for (joltage, deps) in joltage_dependencies.rev() {
 
-        // println!("{} {:?} {:?}", joltage, deps, ways_of_adding_to);
-
         let ways = deps.iter()
             .map(|dep_jolt| ways_of_adding_to.get(&dep_jolt).unwrap())
             .fold(0, |acc, sum| acc + sum);
 
         ways_of_adding_to.insert(joltage, ways);
     }
-
-    // println!("{:?} ", ways_of_adding_to);
 
     return *ways_of_adding_to.get(&0).unwrap();
 }
