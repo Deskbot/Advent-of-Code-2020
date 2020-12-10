@@ -10,7 +10,7 @@ pub fn day10() {
     println!("Part 2: {}", part2(&joltages));
 }
 
-fn part1(joltages: &Vec<i32>) -> i32 {
+fn part1(joltages: &Vec<i64>) -> i64 {
     let mut diffs_of_1 = 0;
     let mut diffs_of_3 = 0;
 
@@ -31,7 +31,7 @@ fn part1(joltages: &Vec<i32>) -> i32 {
     return diffs_of_1 * diffs_of_3;
 }
 
-fn part2(joltages: &Vec<i32>) -> i32 {
+fn part2(joltages: &Vec<i64>) -> i64 {
 
     let joltage_dependencies = (0..joltages.len() - 1) // don't check dependencies of my device
         .map(|index| {
@@ -43,20 +43,20 @@ fn part2(joltages: &Vec<i32>) -> i32 {
             return (joltage, deps);
         });
 
-    println!("{:?} ", joltage_dependencies.clone().collect::<Vec<(i32, Vec<i32>)>>());
+    // println!("{:?} ", joltage_dependencies.clone().collect::<Vec<(i64, Vec<i64>)>>());
 
     // strategy:
     // start with the larger adapters and memoise how many chains to my device can start with each adapter
     // no adapter will depend on a smaller adapter
 
-    let mut ways_of_adding_to = HashMap::<i32, i32>::new(); // joltage to qty
+    let mut ways_of_adding_to = HashMap::<i64, i64>::new(); // joltage to qty
 
     let &my_device = joltages.last().unwrap();
     ways_of_adding_to.insert(my_device, 1); // exactly 1 chain that starts with my device and ends with my device
 
     for (joltage, deps) in joltage_dependencies.rev() {
 
-        println!("{} {:?} {:?}", joltage, deps, ways_of_adding_to);
+        // println!("{} {:?} {:?}", joltage, deps, ways_of_adding_to);
 
         let ways = deps.iter()
             .map(|dep_jolt| ways_of_adding_to.get(&dep_jolt).unwrap())
@@ -70,7 +70,7 @@ fn part2(joltages: &Vec<i32>) -> i32 {
     return *ways_of_adding_to.get(&0).unwrap();
 }
 
-fn can_connect(joltage: i32, might_connect: &[i32]) -> Vec<i32> {
+fn can_connect(joltage: i64, might_connect: &[i64]) -> Vec<i64> {
     let mut results = Vec::with_capacity(3);
 
     for &connector in might_connect {
@@ -85,12 +85,12 @@ fn can_connect(joltage: i32, might_connect: &[i32]) -> Vec<i32> {
     return results;
 }
 
-fn input_to_joltages(input: &str) -> Vec<i32> {
+fn input_to_joltages(input: &str) -> Vec<i64> {
     let mut joltages = input
         .lines()
-        .map(str::parse::<i32>)
+        .map(str::parse::<i64>)
         .map(Result::unwrap)
-        .collect::<Vec<i32>>();
+        .collect::<Vec<i64>>();
 
     // add the socket
     joltages.insert(0, 0);
