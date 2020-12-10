@@ -33,7 +33,7 @@ fn part1(joltages: &Vec<i32>) -> i32 {
 
 fn part2(joltages: &Vec<i32>) -> i32 {
 
-    let joltage_dependencies = (0..joltages.len())
+    let joltage_dependencies = (0..joltages.len() - 1) // don't check dependencies of my device
         .map(|index| {
             let joltage = joltages[index];
             // get a lazy list of joltages larger than the one we are looking at
