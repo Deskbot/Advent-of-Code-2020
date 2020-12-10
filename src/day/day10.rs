@@ -38,7 +38,7 @@ fn part2(joltages: &Vec<i32>) -> i32 {
             let joltage = joltages[index];
             // get a lazy list of joltages larger than the one we are looking at
             // anything after the current index will be larger
-            let deps = can_connect(joltage, &joltages[index..]);
+            let deps = can_connect(joltage, &joltages[(index + 1)..]);
 
             return (joltage, deps);
         });
@@ -56,7 +56,7 @@ fn part2(joltages: &Vec<i32>) -> i32 {
 
     for (joltage, deps) in joltage_dependencies.rev() {
 
-        // println!("{} {:?} {:?}", index, deps, ways_of_adding_to);
+        println!("{} {:?} {:?}", joltage, deps, ways_of_adding_to);
 
         let ways = deps.iter()
             .map(|dep_jolt| ways_of_adding_to.get(&dep_jolt).unwrap())
