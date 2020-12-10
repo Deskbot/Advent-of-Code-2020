@@ -8,20 +8,25 @@ pub fn day10() {
 }
 
 fn part1(input: &str) -> i32 {
-    let mut chargers = input
+    let mut joltages = input
         .lines()
         .map(str::parse::<i32>)
         .map(Result::unwrap)
         .collect::<Vec<i32>>();
 
-    chargers.sort();
-    let &biggest_charger = chargers.last().unwrap();
-    chargers.push(biggest_charger + 3);
+    // add the socket
+    joltages.insert(0, 0);
+
+    joltages.sort();
+
+    // add my device
+    let &biggest_charger = joltages.last().unwrap();
+    joltages.push(biggest_charger + 3);
 
     let mut diffs_of_1 = 0;
     let mut diffs_of_3 = 0;
 
-    for pair in chargers.windows(2) {
+    for pair in joltages.windows(2) {
         let diff = pair[1] - pair[0];
 
         if diff == 1 {
@@ -34,8 +39,6 @@ fn part1(input: &str) -> i32 {
 
         // else ignore and continue;
     }
-
-    println!("{} {}", diffs_of_1, diffs_of_3);
 
     return diffs_of_1 * diffs_of_3;
 }
