@@ -1,3 +1,5 @@
+use memoise::memoise;
+use std::collections::HashMap;
 use std::fs;
 
 pub fn day10() {
@@ -30,8 +32,55 @@ fn part1(joltages: &Vec<i32>) -> i32 {
     return diffs_of_1 * diffs_of_3;
 }
 
-fn part2(input: &Vec<i32>) -> i32 {
-    0
+fn part2(joltages: &Vec<i32>) -> i32 {
+
+    let joltage_dependencies = (0..joltages.len())
+        .map(|index| {
+            // get a lazy list of joltages larger than the one we are looking at
+            // anything after the current index will be larger
+            let deps = can_connect(joltages[index], &joltages[index..]);
+
+            return (index, deps);
+        });
+
+    // strategy:
+    // start with the larger adapters and memoise how many chains to my device can start with each adapter
+    // no adapter will depend on a smaller adapter
+
+    let mut ways_of_adding_to = HashMap::<i32, i32>::new(); // joltage to qty
+
+    let &my_device = joltages.last().unwrap();
+    ways_of_adding_to.insert(my_device, 1); // exactly 1 chain that starts with my device and ends with my device
+
+    for (index, deps) in joltage_dependencies.rev() {
+
+        let ways = deps.iter()
+            .map(|&dep_index| joltages[dep_index])
+            .map(|joltage| ways_of_adding_to.get(&joltage).unwrap())
+            .fold(0, |acc, sum| acc + sum);
+
+        ways_of_adding_to.insert(joltages[index], ways);
+    }
+
+    return *ways_of_adding_to.get(&0).unwrap();
+}
+
+#[memoise(true)]
+fn can_connect(joltage: i32, might_connect: &[i32]) -> Vec<usize> {
+    let mut results = Vec::with_capacity(3);
+
+    for index in 0..might_connect.len() {
+        let connector = might_connect[index];
+
+        if connector - joltage <= 3 {
+            results.push(index);
+        } else {
+            // the connectors are in order, so no further connector will connect
+            break;
+        }
+    }
+
+    return results;
 }
 
 fn input_to_joltages(input: &str) -> Vec<i32> {
@@ -104,12 +153,12 @@ mod tests {
 
     #[test]
     fn part1_example_1() {
-        assert_eq!(super::part1(&input_to_joltages(EXAMPLE_1)), 35);
+        assert_eq!(part1(&input_to_joltages(EXAMPLE_1)), 35);
     }
 
     #[test]
     fn part1_example_2() {
-        assert_eq!(super::part1(&input_to_joltages(EXAMPLE_2)), 220);
+        assert_eq!(part1(&input_to_joltages(EXAMPLE_2)), 220);
     }
 
     #[test]
@@ -117,6 +166,16 @@ mod tests {
         let file = fs::read_to_string("input/day10.txt").expect("input not found");
         let joltages = input_to_joltages(&file);
         assert_eq!(part1(&joltages), 2376);
+    }
+
+    #[test]
+    fn part2_example_1() {
+        assert_eq!(part2(&input_to_joltages(EXAMPLE_1)), 8);
+    }
+
+    #[test]
+    fn part2_example_2() {
+        assert_eq!(part2(&input_to_joltages(EXAMPLE_2)), 19208);
     }
 }
 
