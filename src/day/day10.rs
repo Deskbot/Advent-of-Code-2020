@@ -1,4 +1,3 @@
-use memoise::memoise;
 use std::collections::HashMap;
 use std::fs;
 
@@ -36,12 +35,15 @@ fn part2(joltages: &Vec<i32>) -> i32 {
 
     let joltage_dependencies = (0..joltages.len())
         .map(|index| {
+            let joltage = joltages[index];
             // get a lazy list of joltages larger than the one we are looking at
             // anything after the current index will be larger
-            let deps = can_connect(joltages[index], &joltages[index..]);
+            let deps = can_connect(joltage, &joltages[index..]);
 
-            return (index, deps);
+            return (joltage, deps);
         });
+
+    println!("{:?} ", joltage_dependencies.clone().collect::<Vec<(i32, Vec<i32>)>>());
 
     // strategy:
     // start with the larger adapters and memoise how many chains to my device can start with each adapter
@@ -52,28 +54,28 @@ fn part2(joltages: &Vec<i32>) -> i32 {
     let &my_device = joltages.last().unwrap();
     ways_of_adding_to.insert(my_device, 1); // exactly 1 chain that starts with my device and ends with my device
 
-    for (index, deps) in joltage_dependencies.rev() {
+    for (joltage, deps) in joltage_dependencies.rev() {
+
+        // println!("{} {:?} {:?}", index, deps, ways_of_adding_to);
 
         let ways = deps.iter()
-            .map(|&dep_index| joltages[dep_index])
-            .map(|joltage| ways_of_adding_to.get(&joltage).unwrap())
+            .map(|dep_jolt| ways_of_adding_to.get(&dep_jolt).unwrap())
             .fold(0, |acc, sum| acc + sum);
 
-        ways_of_adding_to.insert(joltages[index], ways);
+        ways_of_adding_to.insert(joltage, ways);
     }
+
+    // println!("{:?} ", ways_of_adding_to);
 
     return *ways_of_adding_to.get(&0).unwrap();
 }
 
-#[memoise(true)]
-fn can_connect(joltage: i32, might_connect: &[i32]) -> Vec<usize> {
+fn can_connect(joltage: i32, might_connect: &[i32]) -> Vec<i32> {
     let mut results = Vec::with_capacity(3);
 
-    for index in 0..might_connect.len() {
-        let connector = might_connect[index];
-
+    for &connector in might_connect {
         if connector - joltage <= 3 {
-            results.push(index);
+            results.push(connector);
         } else {
             // the connectors are in order, so no further connector will connect
             break;
