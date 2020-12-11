@@ -74,8 +74,27 @@ impl<T: Eq + Clone + Copy + Debug> Grid<T> {
         })
     }
 
-    fn get(&self, row_num: usize, col_num: usize) -> &T {
+    pub fn game_of_life_part_2(&self, new_cell_value: fn (was: &T, visible: &Vec<&T>) -> T) -> Grid<T> {
+        self.coord_map(|(row_num, col_num)| {
+            let mut visible = self.get_neighbours(row_num, col_num);
+            visible.append(&mut self.get_line_segment(row_num, col_num));
+
+            return new_cell_value(self.get(row_num, col_num), &visible);
+        })
+    }
+
+    pub fn get(&self, row_num: usize, col_num: usize) -> &T {
         return self.grid.get(row_num).unwrap().get(col_num).unwrap();
+    }
+
+    fn get_line_segment(&self, row_num: usize, col_num: usize) -> Vec<&T> {
+        let mut result = Vec::with_capacity(self.rows);
+
+        for include_col in col_num..self.cols {
+            result.push(self.get(row_num, include_col));
+        }
+
+        return result;
     }
 
     fn get_neighbours(&self, row_num: usize, col_num: usize) -> Vec<&T> {
@@ -93,19 +112,19 @@ impl<T: Eq + Clone + Copy + Debug> Grid<T> {
         ];
 
         if row_num == 0 {
-            offsets = offsets.into_iter().filter(|&(r,c)| r != -1).collect();
+            offsets = offsets.into_iter().filter(|&(r,_)| r != -1).collect();
         }
 
         if row_num == self.rows - 1 {
-            offsets = offsets.into_iter().filter(|&(r,c)| r != 1).collect();
+            offsets = offsets.into_iter().filter(|&(r,_)| r != 1).collect();
         }
 
         if col_num == 0 {
-            offsets = offsets.into_iter().filter(|&(r,c)| c != -1).collect();
+            offsets = offsets.into_iter().filter(|&(_,c)| c != -1).collect();
         }
 
         if col_num == self.cols - 1 {
-            offsets = offsets.into_iter().filter(|&(r,c)| c != 1).collect();
+            offsets = offsets.into_iter().filter(|&(_,c)| c != 1).collect();
         }
 
         for (r_off, c_off) in offsets {
