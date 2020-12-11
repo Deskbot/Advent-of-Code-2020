@@ -1,7 +1,7 @@
 use crate::grid::Grid;
 use std::fs;
 
-#[derive(Clone, Copy, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum Seat {
     Empty,
     Floor,

@@ -1,10 +1,12 @@
+use std::fmt::Debug;
+
 pub struct Grid<T> {
     cols: usize,
     grid: Vec<Vec<T>>,
     rows: usize,
 }
 
-impl<T: Eq + Clone + Copy> Grid<T> {
+impl<T: Eq + Clone + Copy + Debug> Grid<T> {
     pub fn new(vec_2d: Vec<Vec<T>>) -> Grid<T> {
         let first_row_len = vec_2d[0].len();
 
@@ -35,10 +37,12 @@ impl<T: Eq + Clone + Copy> Grid<T> {
         }
     }
 
-    fn coord_map<U>(&self, get_new_cell_value: impl Fn((usize,usize)) -> U) -> Grid<U> {
-        let mut grid = Vec::<Vec<U>>::new();
+    fn coord_map<U: Debug>(&self, get_new_cell_value: impl Fn((usize,usize)) -> U) -> Grid<U> {
+        let mut grid = Vec::<Vec<U>>::with_capacity(self.rows);
 
         for row_num in 0..self.grid.len() {
+            grid.insert(row_num, Vec::with_capacity(self.cols));
+
             let &row = &self.grid.get(row_num).unwrap();
             for col_num in 0..row.len() {
                 let new_cell = get_new_cell_value((row_num, col_num));
@@ -88,40 +92,58 @@ impl<T: Eq + Clone + Copy> Grid<T> {
     fn get_neighbours(&self, row_num: usize, col_num: usize) -> Vec<&T> {
         let mut result = Vec::with_capacity(8);
 
-        // static offsets: [(isize, isize); 8] = [
-        //     (-1, -1),
-        //     (-1,  0),
-        //     (-1,  1),
-        //     ( 0, -1),
-        //     ( 0,  1),
-        //     ( 1, -1),
-        //     ( 1,  0),
-        //     ( 1,  1),
-        // ];
+        let mut offsets: Vec<(i32, i32)> = vec![
+            (-1, -1),
+            (-1,  0),
+            (-1,  1),
+            ( 0, -1),
+            ( 0,  1),
+            ( 1, -1),
+            ( 1,  0),
+            ( 1,  1),
+        ];
 
-        // offsets.iter()
-        //     .filter(|(row_offset, col_offset| {
-        //         row_
-        //     })
-
-        if row_num > 0 {
-            if col_num > 0 {
-                result.push(&self.grid[row_num - 1][col_num - 1]);
-            }
-            result.push(&self.grid[row_num - 1][col_num]);
-            result.push(&self.grid[row_num - 1][col_num + 1]);
+        if row_num == 0 {
+            offsets = offsets.into_iter().filter(|&(r,c)| r != -1).collect();
         }
 
-        if col_num > 0 {
-            result.push(&self.grid[row_num][col_num - 1]);
+        if row_num == self.rows - 1 {
+            offsets = offsets.into_iter().filter(|&(r,c)| r != 1).collect();
         }
-        result.push(&self.grid[row_num][col_num + 1]);
 
-        if col_num > 0 {
-            result.push(&self.grid[row_num + 1][col_num - 1]);
+        if col_num == 0 {
+            offsets = offsets.into_iter().filter(|&(r,c)| c != -1).collect();
         }
-        result.push(&self.grid[row_num + 1][col_num]);
-        result.push(&self.grid[row_num + 1][col_num + 1]);
+
+        if col_num == self.cols - 1 {
+            offsets = offsets.into_iter().filter(|&(r,c)| c != 1).collect();
+        }
+
+        for (r_off, c_off) in offsets {
+            let r = (row_num as i32 + r_off) as usize;
+            let c = (col_num as i32 + c_off) as usize;
+
+            result.push(&self.grid[r][c]);
+        }
+
+        // if row_num > 0 {
+        //     if col_num > 0 {
+        //         result.push(&self.grid[row_num - 1][col_num - 1]);
+        //     }
+        //     result.push(&self.grid[row_num - 1][col_num]);
+        //     result.push(&self.grid[row_num - 1][col_num + 1]);
+        // }
+
+        // if col_num > 0 {
+        //     result.push(&self.grid[row_num][col_num - 1]);
+        // }
+        // result.push(&self.grid[row_num][col_num + 1]);
+
+        // if col_num > 0 {
+        //     result.push(&self.grid[row_num + 1][col_num - 1]);
+        // }
+        // result.push(&self.grid[row_num + 1][col_num]);
+        // result.push(&self.grid[row_num + 1][col_num + 1]);
 
         return result;
     }
