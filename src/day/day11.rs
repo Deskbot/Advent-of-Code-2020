@@ -1,6 +1,7 @@
 use crate::grid::Grid;
 use std::fs;
 
+#[derive(Clone, Copy, Eq, PartialEq)]
 enum Seat {
     Empty,
     Floor,
@@ -27,5 +28,60 @@ fn part1(input: &str) -> i64 {
             _ => panic!("invalid input: char doesn't represent a seat"),
         });
 
-    0
+    let mut grid = grid;
+
+    loop {
+        let new_grid = grid.game_of_life(|was, neighbours| {
+
+            if was == &Seat::Empty {
+                if has_qty(neighbours, &&Seat::Occupied, 0) {
+                    return Seat:: Occupied
+                }
+            }
+
+            else if was == &Seat::Occupied {
+                if has_at_least_qty(neighbours, &&Seat::Occupied, 4) {
+                    return Seat::Empty;
+                }
+            }
+
+            return was.clone();
+        });
+
+
+        if new_grid.eq(&grid) {
+            break;
+        }
+
+        grid = new_grid;
+    }
+
+    return grid.cell_iter().iter()
+        .filter(|cell| cell == &&Seat::Occupied)
+        .count() as i64;
+}
+
+fn has_qty<T: Eq>(vec: &Vec<T>, val_to_restrict: &T, qty: i64) -> bool {
+    let instances_found =
+        vec.iter()
+            .filter(|&val| val == val_to_restrict)
+            .count() as i64;
+
+    return instances_found == qty;
+}
+
+fn has_at_least_qty<T: Eq>(vec: &Vec<T>, val_to_restrict: &T, qty: i64) -> bool {
+    let mut qty_found = 0;
+
+    for val in vec {
+        if val == val_to_restrict {
+            qty_found += 1;
+
+            if qty_found >= qty {
+                return true;
+            }
+        }
+    }
+
+    return qty_found >= qty; // account for 0
 }
