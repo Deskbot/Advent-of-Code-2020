@@ -1,12 +1,15 @@
 use std::fmt::Debug;
+use std::fmt::Display;
+use std::fmt::Formatter;
+use std::fmt::Result;
 
-pub struct Grid<T> {
+pub struct Grid<T: Display> {
     cols: usize,
     grid: Vec<Vec<T>>,
     rows: usize,
 }
 
-impl<T: Eq + Clone + Copy + Debug> Grid<T> {
+impl<T: Eq + Clone + Copy + Debug + Display> Grid<T> {
     pub fn new(vec_2d: Vec<Vec<T>>) -> Grid<T> {
         let first_row_len = vec_2d[0].len();
 
@@ -23,7 +26,7 @@ impl<T: Eq + Clone + Copy + Debug> Grid<T> {
         }
     }
 
-    pub fn fmap<U>(&self, mapper: fn(&T) -> U) -> Grid<U> {
+    pub fn fmap<U: Display>(&self, mapper: fn(&T) -> U) -> Grid<U> {
         Grid {
             cols: self.cols,
             grid:
@@ -37,7 +40,7 @@ impl<T: Eq + Clone + Copy + Debug> Grid<T> {
         }
     }
 
-    fn coord_map<U: Debug>(&self, get_new_cell_value: impl Fn((usize,usize)) -> U) -> Grid<U> {
+    fn coord_map<U: Display>(&self, get_new_cell_value: impl Fn((usize,usize)) -> U) -> Grid<U> {
         let mut grid = Vec::<Vec<U>>::with_capacity(self.rows);
 
         for row_num in 0..self.grid.len() {
@@ -145,5 +148,18 @@ impl<T: Eq + Clone + Copy + Debug> Grid<T> {
         }
 
         return result;
+    }
+}
+
+impl<T: Eq + Clone + Copy + Debug + Display> Display for Grid<T> {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        for row in &self.grid {
+            for cell in row {
+                write!(f, "{}", cell)?;
+            }
+            write!(f, "\n")?;
+        }
+
+        Result::Ok(())
     }
 }

@@ -1,11 +1,26 @@
-use crate::grid::Grid;
+use std::fmt::Display;
+use std::fmt::Formatter;
+use std::fmt::Result;
 use std::fs;
+use crate::grid::Grid;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum Seat {
     Empty,
     Floor,
     Occupied,
+}
+
+impl Display for Seat {
+    fn fmt(&self, f: &mut Formatter) -> Result {
+        let ch = match self {
+            Seat::Empty => 'L',
+            Seat::Floor => '.',
+            Seat::Occupied => '#',
+        };
+
+        write!(f, "{}", ch)
+    }
 }
 
 pub fn day11() {
@@ -94,6 +109,8 @@ fn part2(input: &str) -> i64 {
             return was.clone();
         });
 
+        println!("{}", grid);
+
         if new_grid.eq(&grid) {
             break;
         }
@@ -129,4 +146,27 @@ fn has_at_least_qty<T: Eq>(vec: &Vec<T>, val_to_restrict: &T, qty: i64) -> bool 
     }
 
     return qty_found >= qty; // account for 0
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE: &str = "L.LL.LL.LL
+LLLLLLL.LL
+L.L.L..L..
+LLLL.LL.LL
+L.LL.LL.LL
+L.LLLLL.LL
+..L.L.....
+LLLLLLLLLL
+L.LLLLLL.L
+L.LLLLL.LL
+";
+
+    #[test]
+    fn part2_example() {
+        assert_eq!(part2(EXAMPLE), 26);
+    }
 }
