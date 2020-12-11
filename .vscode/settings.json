@@ -3,6 +3,7 @@
         "deps",
         "fmap",
         "joltage",
-        "joltages"
+        "joltages",
+        "coord"
     ]
 }

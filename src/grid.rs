@@ -68,21 +68,10 @@ impl<T: Eq + Clone + Copy + Debug> Grid<T> {
     }
 
     pub fn game_of_life(&self, new_cell_value: fn (was: &T, neighbours: &Vec<&T>) -> T) -> Grid<T> {
-        // let grid = Vec::with_capacity(self.rows);
-        // grid.
-
-        // for row_num in 0..self.grid.len() {
-        //     let &row = &self.grid.get(row_num).unwrap();
-        //     for col_num in 0..row.len() {
-        //         let neighbours = self.get_neighbours(row_num, col_num);
-        //         new_cell_value(&neighbours);
-        //     }
-        // }
-
-        return self.coord_map(|(row_num, col_num)| {
+        self.coord_map(|(row_num, col_num)| {
             let neighbours = self.get_neighbours(row_num, col_num);
             return new_cell_value(self.get(row_num, col_num), &neighbours);
-        });
+        })
     }
 
     fn get(&self, row_num: usize, col_num: usize) -> &T {
@@ -126,25 +115,6 @@ impl<T: Eq + Clone + Copy + Debug> Grid<T> {
             result.push(&self.grid[r][c]);
         }
 
-        // if row_num > 0 {
-        //     if col_num > 0 {
-        //         result.push(&self.grid[row_num - 1][col_num - 1]);
-        //     }
-        //     result.push(&self.grid[row_num - 1][col_num]);
-        //     result.push(&self.grid[row_num - 1][col_num + 1]);
-        // }
-
-        // if col_num > 0 {
-        //     result.push(&self.grid[row_num][col_num - 1]);
-        // }
-        // result.push(&self.grid[row_num][col_num + 1]);
-
-        // if col_num > 0 {
-        //     result.push(&self.grid[row_num + 1][col_num - 1]);
-        // }
-        // result.push(&self.grid[row_num + 1][col_num]);
-        // result.push(&self.grid[row_num + 1][col_num + 1]);
-
         return result;
     }
 
@@ -157,15 +127,4 @@ impl<T: Eq + Clone + Copy + Debug> Grid<T> {
 
         return result;
     }
-
-
-    // fn points(&self) -> Map<Range<usize>, fn (usize) -> (usize, usize)> {
-    //     (0..self.grid.len())
-    //         .map(|row_num| {
-    //             let &row = &self.grid.get(row_num).unwrap();
-
-    //             return (0..row.len())
-    //                 .map(|col_num| (row_num, col_num));
-    //         })
-    // }
 }
