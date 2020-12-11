@@ -136,7 +136,9 @@ impl<T: Eq + Clone + Copy + Debug + Display> Grid<T> {
 impl Grid<Seat> {
     pub fn game_of_life_part_2(&self, new_cell_value: fn (was: &Seat, visible: &Vec<&Seat>) -> Seat) -> Grid<Seat> {
         self.coord_map(|(row_num, col_num)| {
-            let mut visible = self.get_visible(row_num, col_num);
+            let visible = self.get_visible(row_num, col_num);
+
+            println!("{} {} {} {:?} {}", row_num, col_num, self.get(row_num, col_num), &visible, new_cell_value(self.get(row_num, col_num), &visible));
             return new_cell_value(self.get(row_num, col_num), &visible);
         })
     }
@@ -162,6 +164,8 @@ impl Grid<Seat> {
             for times in 1.. {
                 let might_see_pos = direction.multiply(times).plus(&from);
 
+                println!("might: {}", might_see_pos);
+
                 if !self.pos_exists(might_see_pos.x, might_see_pos.y) {
                     break;
                 }
@@ -169,7 +173,7 @@ impl Grid<Seat> {
                 let cell = self.get(might_see_pos.x as usize, might_see_pos.y as usize);
                 visible.push(cell);
 
-                if *cell != Seat::Empty {
+                if *cell != Seat::Floor {
                     break;
                 }
             }
@@ -179,7 +183,7 @@ impl Grid<Seat> {
     }
 
     fn pos_exists(&self, row_num: i32, col_num: i32) -> bool {
-        row_num > 0 && col_num > 0
+        row_num >= 0 && col_num >= 0
             && row_num < self.rows as i32
             && col_num < self.cols as i32
     }
