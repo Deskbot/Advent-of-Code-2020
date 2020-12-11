@@ -137,8 +137,6 @@ impl Grid<Seat> {
     pub fn game_of_life_part_2(&self, new_cell_value: fn (was: &Seat, visible: &Vec<&Seat>) -> Seat) -> Grid<Seat> {
         self.coord_map(|(row_num, col_num)| {
             let visible = self.get_visible(row_num, col_num);
-
-            println!("{} {} {} {:?} {}", row_num, col_num, self.get(row_num, col_num), &visible, new_cell_value(self.get(row_num, col_num), &visible));
             return new_cell_value(self.get(row_num, col_num), &visible);
         })
     }
@@ -163,8 +161,6 @@ impl Grid<Seat> {
         for direction in directions {
             for times in 1.. {
                 let might_see_pos = direction.multiply(times).plus(&from);
-
-                println!("might: {}", might_see_pos);
 
                 if !self.pos_exists(might_see_pos.x, might_see_pos.y) {
                     break;

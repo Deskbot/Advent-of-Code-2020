@@ -109,7 +109,7 @@ fn part2(input: &str) -> i64 {
             return was.clone();
         });
 
-        println!("\n\n{}\n\n", new_grid);
+        // println!("\n\n{}\n\n", new_grid);
 
         if new_grid.eq(&grid) {
             break;
