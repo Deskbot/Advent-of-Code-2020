@@ -1,3 +1,4 @@
+use crate::grid::Grid;
 use std::fs;
 
 enum Seat {
@@ -14,23 +15,17 @@ pub fn day11() {
 }
 
 fn part1(input: &str) -> i64 {
-    let mut char_2d_vec = input.lines()
+    let char_2d_vec = input.lines()
         .map(|line| line.chars().collect::<Vec<char>>())
         .collect::<Vec<Vec<char>>>();
 
-
-    let seat_2d_vec =
-        char_2d_vec.into_iter()
-            .map(|row| row.into_iter()
-                .map(|ch| match ch {
-                    'L' => Seat::Empty,
-                    '#' => Seat::Occupied,
-                    '.' => Seat::Floor,
-                    _ => panic!("invalid input: char doesn't represent a seat"),
-                })
-                .collect::<Vec<Seat>>()
-            )
-            .collect::<Vec<Vec<Seat>>>();
+    let grid = Grid::new(char_2d_vec)
+        .fmap(|ch| match ch {
+            'L' => Seat::Empty,
+            '#' => Seat::Occupied,
+            '.' => Seat::Floor,
+            _ => panic!("invalid input: char doesn't represent a seat"),
+        });
 
     0
 }
