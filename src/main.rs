@@ -3,6 +3,7 @@ use std::env;
 mod console;
 mod day;
 mod grid;
+mod point;
 mod util;
 
 use day::{

@@ -5,7 +5,7 @@ use std::fs;
 use crate::grid::Grid;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-enum Seat {
+pub enum Seat {
     Empty,
     Floor,
     Occupied,

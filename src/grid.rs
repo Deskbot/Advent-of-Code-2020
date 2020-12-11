@@ -1,3 +1,4 @@
+use crate::{day::day11::Seat, point::Point};
 use std::fmt::Debug;
 use std::fmt::Display;
 use std::fmt::Formatter;
@@ -77,27 +78,8 @@ impl<T: Eq + Clone + Copy + Debug + Display> Grid<T> {
         })
     }
 
-    pub fn game_of_life_part_2(&self, new_cell_value: fn (was: &T, visible: &Vec<&T>) -> T) -> Grid<T> {
-        self.coord_map(|(row_num, col_num)| {
-            let mut visible = self.get_neighbours(row_num, col_num);
-            visible.append(&mut self.get_line_segment(row_num, col_num));
-
-            return new_cell_value(self.get(row_num, col_num), &visible);
-        })
-    }
-
     pub fn get(&self, row_num: usize, col_num: usize) -> &T {
         return self.grid.get(row_num).unwrap().get(col_num).unwrap();
-    }
-
-    fn get_line_segment(&self, row_num: usize, col_num: usize) -> Vec<&T> {
-        let mut result = Vec::with_capacity(self.rows);
-
-        for include_col in col_num..self.cols {
-            result.push(self.get(row_num, include_col));
-        }
-
-        return result;
     }
 
     fn get_neighbours(&self, row_num: usize, col_num: usize) -> Vec<&T> {
@@ -148,6 +130,58 @@ impl<T: Eq + Clone + Copy + Debug + Display> Grid<T> {
         }
 
         return result;
+    }
+}
+
+impl Grid<Seat> {
+    pub fn game_of_life_part_2(&self, new_cell_value: fn (was: &Seat, visible: &Vec<&Seat>) -> Seat) -> Grid<Seat> {
+        self.coord_map(|(row_num, col_num)| {
+            let mut visible = self.get_visible(row_num, col_num);
+            return new_cell_value(self.get(row_num, col_num), &visible);
+        })
+    }
+
+    fn get_visible(&self, row_num: usize, col_num: usize) -> Vec<&Seat> {
+        let mut visible = Vec::with_capacity(self.cols + self.rows);
+
+        let directions: Vec<Point> = vec![
+            Point::new(-1, -1),
+            Point::new(-1,  0),
+            Point::new(-1,  1),
+            Point::new( 0, -1),
+            Point::new( 0,  1),
+            Point::new( 1, -1),
+            Point::new( 1,  0),
+            Point::new( 1,  1),
+        ];
+
+        // row is x, col is y because it's easier to think about
+        let from = Point::new(row_num as i32, col_num as i32);
+
+        for direction in directions {
+            for times in 1.. {
+                let might_see_pos = direction.multiply(times).plus(&from);
+
+                if !self.pos_exists(might_see_pos.x, might_see_pos.y) {
+                    break;
+                }
+
+                let cell = self.get(might_see_pos.x as usize, might_see_pos.y as usize);
+                visible.push(cell);
+
+                if *cell != Seat::Empty {
+                    break;
+                }
+            }
+        }
+
+        return visible;
+    }
+
+    fn pos_exists(&self, row_num: i32, col_num: i32) -> bool {
+        row_num > 0 && col_num > 0
+            && row_num < self.rows as i32
+            && col_num < self.cols as i32
     }
 }
 
