@@ -42,7 +42,7 @@ impl Move {
 }
 
 struct Ship {
-    position: Point,
+    pub position: Point,
     angle: i64, // degrees
 }
 
@@ -68,11 +68,11 @@ impl Ship {
         let displacement =
             if m.action == Forward {
                 match self.angle % 360 {
-                      0 => Point::new( 0,           m.magnitude),
-                     90 => Point::new( m.magnitude, 0),
-                    180 => Point::new( 0,          -m.magnitude),
-                    270 => Point::new(-m.magnitude, 0),
-                    _ => panic!("wtf"),
+                      0        => Point::new( 0,           m.magnitude),
+                     90 | -270 => Point::new( m.magnitude, 0),
+                    180 | -180 => Point::new( 0,          -m.magnitude),
+                    270 |  -90 => Point::new(-m.magnitude, 0),
+                    _ => panic!("wtf {}", self.angle),
                 }
             } else {
                 match m.action {
@@ -84,11 +84,11 @@ impl Ship {
                 }
             };
 
-        self.position.plus(&displacement);
+        self.position = self.position.plus(&displacement);
     }
 
     pub fn manhattan_distance(&self) -> i64 {
-        return self.position.x + self.position.y;
+        return self.position.x.abs() + self.position.y.abs();
     }
 }
 
