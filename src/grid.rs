@@ -85,7 +85,7 @@ impl<T: Eq + Clone + Copy + Debug + Display> Grid<T> {
     fn get_neighbours(&self, row_num: usize, col_num: usize) -> Vec<&T> {
         let mut result = Vec::with_capacity(8);
 
-        let mut offsets: Vec<(i32, i32)> = vec![
+        let mut offsets: Vec<(i64, i64)> = vec![
             (-1, -1),
             (-1,  0),
             (-1,  1),
@@ -113,8 +113,8 @@ impl<T: Eq + Clone + Copy + Debug + Display> Grid<T> {
         }
 
         for (r_off, c_off) in offsets {
-            let r = (row_num as i32 + r_off) as usize;
-            let c = (col_num as i32 + c_off) as usize;
+            let r = (row_num as i64 + r_off) as usize;
+            let c = (col_num as i64 + c_off) as usize;
 
             result.push(&self.grid[r][c]);
         }
@@ -156,7 +156,7 @@ impl Grid<Seat> {
         ];
 
         // row is x, col is y because it's easier to think about
-        let from = Point::new(row_num as i32, col_num as i32);
+        let from = Point::new(row_num as i64, col_num as i64);
 
         for direction in directions {
             for times in 1.. {
@@ -178,10 +178,10 @@ impl Grid<Seat> {
         return visible;
     }
 
-    fn pos_exists(&self, row_num: i32, col_num: i32) -> bool {
+    fn pos_exists(&self, row_num: i64, col_num: i64) -> bool {
         row_num >= 0 && col_num >= 0
-            && row_num < self.rows as i32
-            && col_num < self.cols as i32
+            && row_num < self.rows as i64
+            && col_num < self.cols as i64
     }
 }
 
