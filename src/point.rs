@@ -29,12 +29,22 @@ impl Point {
     pub fn rotate(&self, degrees: i64) -> Point {
         match degrees % 360 {
               0        => self.clone(),
-             90 | -270 => Point::new(self.y, self.x),
-            180 | -180 => Point::new(self.x, -self.y),
+             90 | -270 => Point::new(self.y, -self.x),
+            180 | -180 => Point::new(-self.x, -self.y),
             270 |  -90 => Point::new(-self.y, self.x),
             _ => panic!("wtf {}", degrees),
         }
     }
+
+    // pub fn rotate(&self, degrees: f64) -> Point {
+    //     let cos = degrees.cos();
+    //     let sin = degrees.sin();
+
+    //     let x = self.x as f64 * cos - self.y as f64 * sin;
+    //     let y = self.x as f64 * sin + self.y as f64 * cos;
+
+    //     return Point{ x: x as i64, y: y as i64 }; // fingers crossed
+    // }
 
 }
 

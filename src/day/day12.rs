@@ -89,9 +89,20 @@ fn parse_input(input: &str) -> Vec<Action> {
 mod tests {
     use super::*;
 
+    const EXAMPLE: &str = "F10
+N3
+F7
+R90
+F11";
+
     #[test]
     fn part1_answer() {
         let file = fs::read_to_string("input/day12.txt").expect("input not found");
         assert_eq!(part1(&file), 1424);
+    }
+
+    #[test]
+    fn part2_example() {
+        assert_eq!(part2(EXAMPLE), 286);
     }
 }

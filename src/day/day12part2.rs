@@ -3,7 +3,7 @@ use crate::Action;
 
 pub struct Ship {
     pub position: Point,
-    waypoint: Point,
+    pub waypoint: Point,
 }
 
 impl Ship {
