@@ -26,6 +26,16 @@ impl Point {
         }
     }
 
+    pub fn rotate(&self, degrees: i64) -> Point {
+        match degrees % 360 {
+              0        => self.clone(),
+             90 | -270 => Point::new(self.y, self.x),
+            180 | -180 => Point::new(self.x, -self.y),
+            270 |  -90 => Point::new(-self.y, self.x),
+            _ => panic!("wtf {}", degrees),
+        }
+    }
+
 }
 
 impl Display for Point {

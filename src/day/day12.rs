@@ -1,6 +1,7 @@
 use std::fs;
 use crate::point::Point;
 use crate::day::day12part1;
+use crate::day::day12part2;
 
 #[derive(Eq, PartialEq)]
 pub enum Action {
@@ -41,7 +42,7 @@ pub fn day12() {
     let file = fs::read_to_string("input/day12.txt").expect("input not found");
 
     println!("Part 1: {}", part1(&file));
-    // println!("Part 2: {}", part2(&file));
+    println!("Part 2: {}", part2(&file));
 }
 
 fn part1(input: &str) -> i64 {
@@ -58,6 +59,21 @@ fn part1(input: &str) -> i64 {
     }
 
     // return get manhattan distance from 0,0 to current position
+
+    return ship.manhattan_distance();
+}
+
+fn part2(input: &str) -> i64 {
+    let directions = parse_input(input);
+
+    let mut ship = day12part2::Ship::new(
+        Point::new(0,0),
+        Point::new(10,1),
+    );
+
+    for direction in directions {
+        ship.go(&direction);
+    }
 
     return ship.manhattan_distance();
 }

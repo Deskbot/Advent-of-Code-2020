@@ -1,4 +1,3 @@
-
 use crate::point::Point;
 use crate::Action;
 
