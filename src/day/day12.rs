@@ -13,7 +13,16 @@ enum Action {
 }
 
 impl Action {
-    pub fn new(c: char, mag: i64) -> Action {
+    pub fn parse(s: &str) -> Action {
+        let mut iter = s.chars();
+        let orientation_code = iter.next().unwrap();
+        let magnitude_str = iter.collect::<String>();
+
+        let magnitude = magnitude_str.parse::<i64>().unwrap();
+        return Action::new(orientation_code, magnitude);
+    }
+
+    fn new(c: char, mag: i64) -> Action {
         match c {
             'N' => Action::North(mag),
             'S' => Action::South(mag),
@@ -105,17 +114,8 @@ fn part1(input: &str) -> i64 {
 
 fn parse_input(input: &str) -> Vec<Action> {
     input.lines()
-        .map(parse_direction)
+        .map(Action::parse)
         .collect()
-}
-
-fn parse_direction(s: &str) -> Action {
-    let mut iter = s.chars();
-    let orientation_code = iter.next().unwrap();
-    let magnitude_str = iter.collect::<String>();
-
-    let magnitude = magnitude_str.parse::<i64>().unwrap();
-    return Action::new(orientation_code, magnitude);
 }
 
 
