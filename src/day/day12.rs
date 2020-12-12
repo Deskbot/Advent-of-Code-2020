@@ -3,40 +3,26 @@ use crate::point::Point;
 
 #[derive(Eq, PartialEq)]
 enum Action {
-    North,
-    South,
-    East,
-    West,
-    Left,
-    Right,
-    Forward,
+    North(i64),
+    South(i64),
+    East(i64),
+    West(i64),
+    Left(i64),
+    Right(i64),
+    Forward(i64),
 }
 
 impl Action {
-    pub fn from_char(c: char) -> Action {
+    pub fn new(c: char, mag: i64) -> Action {
         match c {
-            'N' => Action::North,
-            'S' => Action::South,
-            'E' => Action::East,
-            'W' => Action::West,
-            'L' => Action::Left,
-            'R' => Action::Right,
-            'F' => Action::Forward,
+            'N' => Action::North(mag),
+            'S' => Action::South(mag),
+            'E' => Action::East(mag),
+            'W' => Action::West(mag),
+            'L' => Action::Left(mag),
+            'R' => Action::Right(mag),
+            'F' => Action::Forward(mag),
             _ => panic!("invalid character"),
-        }
-    }
-}
-
-struct Move {
-    pub action: Action,
-    pub magnitude: i64,
-}
-
-impl Move {
-    pub fn new(action: Action, magnitude: i64) -> Move {
-        Move {
-            action,
-            magnitude,
         }
     }
 }
@@ -54,32 +40,32 @@ impl Ship {
         }
     }
 
-    pub fn go(&mut self, m: &Move) {
+    pub fn go(&mut self, action: &Action) {
         use Action::*;
 
-        if m.action == Left {
-            self.angle -= m.magnitude;
+        if let Left(mag) = action {
+            self.angle -= mag;
             return;
-        } else if m.action == Right {
-            self.angle += m.magnitude;
+        } else if let Right(mag) = action {
+            self.angle += mag;
             return;
         }
 
         let displacement =
-            if m.action == Forward {
+            if let &Forward(mag) = action {
                 match self.angle % 360 {
-                      0        => Point::new( 0,           m.magnitude),
-                     90 | -270 => Point::new( m.magnitude, 0),
-                    180 | -180 => Point::new( 0,          -m.magnitude),
-                    270 |  -90 => Point::new(-m.magnitude, 0),
+                      0        => Point::new( 0,           mag),
+                     90 | -270 => Point::new( mag, 0),
+                    180 | -180 => Point::new( 0,          -mag),
+                    270 |  -90 => Point::new(-mag, 0),
                     _ => panic!("wtf {}", self.angle),
                 }
             } else {
-                match m.action {
-                    North => Point::new( 0,           m.magnitude),
-                    East  => Point::new( m.magnitude, 0),
-                    South => Point::new( 0,          -m.magnitude),
-                    West  => Point::new(-m.magnitude, 0),
+                match *action {
+                    North(mag) => Point::new( 0,           mag),
+                    East(mag)  => Point::new( mag, 0),
+                    South(mag) => Point::new( 0,          -mag),
+                    West(mag)  => Point::new(-mag, 0),
                     _ => panic!("wtf"),
                 }
             };
@@ -117,18 +103,29 @@ fn part1(input: &str) -> i64 {
     return ship.manhattan_distance();
 }
 
-fn parse_input(input: &str) -> Vec<Move> {
+fn parse_input(input: &str) -> Vec<Action> {
     input.lines()
         .map(parse_direction)
         .collect()
 }
 
-fn parse_direction(s: &str) -> Move {
+fn parse_direction(s: &str) -> Action {
     let mut iter = s.chars();
     let orientation_code = iter.next().unwrap();
     let magnitude_str = iter.collect::<String>();
 
-    let orientation = Action::from_char(orientation_code);
     let magnitude = magnitude_str.parse::<i64>().unwrap();
-    return Move::new(orientation, magnitude);
+    return Action::new(orientation_code, magnitude);
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn part1_answer() {
+        let file = fs::read_to_string("input/day12.txt").expect("input not found");
+        assert_eq!(part1(&file), 1424);
+    }
 }
