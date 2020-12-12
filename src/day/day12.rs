@@ -63,17 +63,17 @@ impl Ship {
         let displacement =
             if let &Forward(mag) = action {
                 match self.angle % 360 {
-                      0        => Point::new( 0,           mag),
+                      0        => Point::new( 0, mag),
                      90 | -270 => Point::new( mag, 0),
-                    180 | -180 => Point::new( 0,          -mag),
+                    180 | -180 => Point::new( 0, -mag),
                     270 |  -90 => Point::new(-mag, 0),
                     _ => panic!("wtf {}", self.angle),
                 }
             } else {
                 match *action {
-                    North(mag) => Point::new( 0,           mag),
+                    North(mag) => Point::new( 0, mag),
                     East(mag)  => Point::new( mag, 0),
-                    South(mag) => Point::new( 0,          -mag),
+                    South(mag) => Point::new( 0, -mag),
                     West(mag)  => Point::new(-mag, 0),
                     _ => panic!("wtf"),
                 }
