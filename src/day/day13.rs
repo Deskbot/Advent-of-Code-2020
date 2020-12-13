@@ -1,10 +1,11 @@
+use std::collections::HashMap;
 use std::fs;
 
 pub fn day13() {
     let file = fs::read_to_string("input/day13.txt").expect("input not found");
 
     println!("Part 1: {}", part1(&file));
-    // println!("Part 2: {}", part2(&file));
+    println!("Part 2: {}", part2(&file, 100000000000000));
 }
 
 fn part1(input: &str) -> i64 {
@@ -30,9 +31,43 @@ fn part1(input: &str) -> i64 {
 
     let (bus_id, wait_time) = soonest_bus;
 
-    println!("{:?}", soonest_bus);
-
     return bus_id * wait_time;
+}
+
+fn part2(input: &str, start_at: i64) -> i64 {
+    let itr = input.lines();
+    let mut itr = itr.skip(1); // skip current time line
+
+    let itr = itr.next().unwrap().split(',');
+
+    // create some kind of data structure for when each bus should arrive
+    let mut bus_to_offset = HashMap::<i64,i64>::new();
+
+    for (offset, bus_id_str) in itr.enumerate() {
+        if bus_id_str == "x" {
+            continue;
+        }
+
+        let bus_id = bus_id_str.parse::<i64>().unwrap();
+
+        bus_to_offset.insert(bus_id, offset as i64);
+    }
+
+    // a time is the correct answer if for each bus id: (id - (time % id)) == minute_it_should_arrive
+
+    'outer:
+    for minute in start_at.. {
+        for (&id, &bus_req_offset) in &bus_to_offset {
+            let bus_arrival = id - (minute % id); // arrival time after "minute"
+            if bus_arrival != bus_req_offset {
+                continue 'outer; // this minute is not such a minute, try the next minute
+            }
+        }
+
+        return minute;
+    }
+
+    panic!("no such minute found");
 }
 
 
@@ -46,5 +81,10 @@ mod tests {
     #[test]
     fn part1_example() {
         assert_eq!(part1(EXAMPLE), 295);
+    }
+
+    #[test]
+    fn part2_example() {
+        assert_eq!(part2(EXAMPLE, 0), 1068788);
     }
 }
