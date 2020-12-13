@@ -99,4 +99,24 @@ mod tests {
     fn part2_example3() {
         assert_eq!(part2("poop\n17,x,13,19", 0), 3417);
     }
+
+    #[test]
+    fn part2_example4() {
+        assert_eq!(part2("poop\n67,7,59,61", 0), 754018);
+    }
+
+    #[test]
+    fn part2_example5() {
+        assert_eq!(part2("poop\n67,x,7,59,61", 0), 779210);
+    }
+
+    #[test]
+    fn part2_example6() {
+        assert_eq!(part2("poop\n67,7,x,59,61", 0), 1261476);
+    }
+
+    #[test]
+    fn part2_example7() {
+        assert_eq!(part2("poop\n1789,37,47,1889", 0), 1202161486);
+    }
 }
