@@ -58,9 +58,7 @@ fn part2(input: &str, start_at: i64) -> i64 {
     'outer:
     for minute in start_at.. {
         for (&id, &bus_req_offset) in &bus_to_offset {
-            let bus_arrival = (id - (minute % id)) % id; // arrival time after "minute"
-
-            if bus_arrival != bus_req_offset {
+            if (minute + bus_req_offset) % id != 0 {
                 continue 'outer; // this minute is not such a minute, try the next minute
             }
         }
@@ -87,5 +85,15 @@ mod tests {
     #[test]
     fn part2_example() {
         assert_eq!(part2(EXAMPLE, 1068700), 1068781);
+    }
+
+    #[test]
+    fn part2_example2() {
+        assert_eq!(part2("poop\n7,13", 0), 77);
+    }
+
+    #[test]
+    fn part2_example3() {
+        assert_eq!(part2("poop\n17,x,13,19", 0), 3417);
     }
 }
