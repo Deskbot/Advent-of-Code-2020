@@ -4,7 +4,7 @@ pub fn day13() {
     let file = fs::read_to_string("input/day13.txt").expect("input not found");
 
     println!("Part 1: {}", part1(&file));
-    println!("Part 2: {}", part2(&file, 100000000000000));
+    println!("Part 2: {}", part2(&file, 0));
 }
 
 fn part1(input: &str) -> i64 {
@@ -64,6 +64,7 @@ fn part2(input: &str, start_at: i64) -> i64 {
 
             // until we find the next bus comes 1 minute after `i` at some time
             if (time + next_offset) % next_bus_id == 0 {
+                // println!("{} {:?}", time, buses[0..i+1].iter().map(|(index,bus)| bus));
                 break;
             }
         }
