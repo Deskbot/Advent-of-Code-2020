@@ -4,7 +4,7 @@ pub fn day13() {
     let file = fs::read_to_string("input/day13.txt").expect("input not found");
 
     println!("Part 1: {}", part1(&file));
-    println!("Part 2: {}", part2(&file, 0));
+    println!("Part 2: {}", part2(&file));
 }
 
 fn part1(input: &str) -> i64 {
@@ -33,7 +33,7 @@ fn part1(input: &str) -> i64 {
     return bus_id * wait_time;
 }
 
-fn part2(input: &str, start_at: i64) -> i64 {
+fn part2(input: &str) -> i64 {
     let itr = input.lines();
     let mut itr = itr.skip(1); // skip current time line
 
@@ -47,7 +47,7 @@ fn part2(input: &str, start_at: i64) -> i64 {
         .collect::<Vec<(i64, i64)>>();
 
     // start at time 0
-    let mut time = start_at;
+    let mut time = 0;
     let mut inc_by = 1;
 
     for i in 0..buses.len()-1 {
@@ -88,36 +88,36 @@ mod tests {
 
     #[test]
     fn part2_example() {
-        assert_eq!(part2(EXAMPLE, 0), 1068781);
+        assert_eq!(part2(EXAMPLE), 1068781);
     }
 
     #[test]
     fn part2_example2() {
-        assert_eq!(part2("poop\n7,13", 0), 77);
+        assert_eq!(part2("poop\n7,13"), 77);
     }
 
     #[test]
     fn part2_example3() {
-        assert_eq!(part2("poop\n17,x,13,19", 0), 3417);
+        assert_eq!(part2("poop\n17,x,13,19"), 3417);
     }
 
     #[test]
     fn part2_example4() {
-        assert_eq!(part2("poop\n67,7,59,61", 0), 754018);
+        assert_eq!(part2("poop\n67,7,59,61"), 754018);
     }
 
     #[test]
     fn part2_example5() {
-        assert_eq!(part2("poop\n67,x,7,59,61", 0), 779210);
+        assert_eq!(part2("poop\n67,x,7,59,61"), 779210);
     }
 
     #[test]
     fn part2_example6() {
-        assert_eq!(part2("poop\n67,7,x,59,61", 0), 1261476);
+        assert_eq!(part2("poop\n67,7,x,59,61"), 1261476);
     }
 
     #[test]
     fn part2_example7() {
-        assert_eq!(part2("poop\n1789,37,47,1889", 0), 1202161486);
+        assert_eq!(part2("poop\n1789,37,47,1889"), 1202161486);
     }
 }
