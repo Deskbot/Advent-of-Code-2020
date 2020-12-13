@@ -38,42 +38,27 @@ fn part2(input: &str) -> i64 {
     let itr = input.lines();
     let mut itr = itr.skip(1); // skip current time line
 
-    let buses = itr.next().unwrap().split(',').collect::<Vec<&str>>();
+    let mut buses = itr.next().unwrap()
+        .split(',')
+        .map(str::parse::<i64>)
+        .filter(Result::is_ok)
+        .map(Result::unwrap)
+        .collect::<Vec<i64>>();
 
-    // create some kind of data structure for when each bus should arrive
-    let mut bus_to_offset = HashMap::<i64,i64>::new();
 
-    for (offset, &bus_id_str) in buses.iter().enumerate() {
-        if bus_id_str == "x" {
-            continue;
-        }
+    // l = list of numbers
 
-        let bus_id = bus_id_str.parse::<i64>().unwrap();
+    // start at time 0
 
-        bus_to_offset.insert(bus_id, offset as i64);
-    }
+    // go up in multiples of the first number ( the one that has to be 0 off the time i.e. a multiple of the target)
 
-    // a time is the correct answer if for each bus id: (id - (time % id)) == minute_it_should_arrive
+    // until we find the first 2 numbers are in order
 
-    let start_at = bus_to_offset.keys().fold(1, |acc,next| acc * next);
-    let mult = buses.iter().min().unwrap().parse::<i64>().unwrap(); // the answer is a multiple of this
+    // the first 2 will be in order again after l[0] * l[1] steps
+    // so update the value to increment by to equal this value
 
-    let mut minute = start_at;
-
-    'outer:
-    loop {
-        minute -= mult;
-
-        println!("{}", minute);
-
-        for (&id, &bus_req_offset) in &bus_to_offset {
-            if (minute + bus_req_offset) % id != 0 {
-                continue 'outer; // this minute is not such a minute, try the next minute
-            }
-        }
-
-        return minute;
-    }
+    // continue until we find the 1 more number in the sequence
+    // etc
 }
 
 
