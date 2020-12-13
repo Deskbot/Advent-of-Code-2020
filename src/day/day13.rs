@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use std::fs;
 
 pub fn day13() {
@@ -38,27 +37,39 @@ fn part2(input: &str) -> i64 {
     let itr = input.lines();
     let mut itr = itr.skip(1); // skip current time line
 
-    let mut buses = itr.next().unwrap()
+    // l = list of numbers
+    let buses = itr.next().unwrap()
         .split(',')
         .map(str::parse::<i64>)
-        .filter(Result::is_ok)
-        .map(Result::unwrap)
-        .collect::<Vec<i64>>();
-
-
-    // l = list of numbers
+        .enumerate()
+        .filter(|(_, bus_id)| bus_id.is_ok())
+        .map(|(offset, bus_id)| (offset as i64, bus_id.unwrap()))
+        .collect::<Vec<(i64, i64)>>();
 
     // start at time 0
+    let mut time = 0;
+    let mut inc_by;
 
-    // go up in multiples of the first number ( the one that has to be 0 off the time i.e. a multiple of the target)
+    for i in 0..buses.len()-1 {
+        let (offset, _) = buses[i];
 
-    // until we find the first 2 numbers are in order
+        inc_by = offset;
 
-    // the first 2 will be in order again after l[0] * l[1] steps
-    // so update the value to increment by to equal this value
+        loop {
+            // go up in multiples of a number
+            // bus `i` will be a multiple of time
+            time += inc_by;
 
-    // continue until we find the 1 more number in the sequence
-    // etc
+            let (next_offset, next_bus_id) = buses[i+1];
+
+            // until we find the next bus comes 1 minute after `i` at some time
+            if (time + next_offset) % next_bus_id == 0 {
+                break;
+            }
+        }
+    };
+
+    return time;
 }
 
 
