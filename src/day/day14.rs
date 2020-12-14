@@ -33,11 +33,19 @@ pub fn day14() {
     let file = fs::read_to_string("input/day14.txt").expect("input not found");
 
     println!("Part 1: {}", part1(&file));
-    // println!("Part 2: {}", part2(&file));
+    println!("Part 2: {}", part2(&file));
 }
 
 fn part1(input: &str) -> i64 {
     let mut program = day14part1::DockerProgram::parse(input);
+    program.run();
+
+    return program.memory.iter()
+        .fold(0, |acc,next| acc + next);
+}
+
+fn part2(input: &str) -> i64 {
+    let mut program = day14part2::DockerProgram::parse(input);
     program.run();
 
     return program.memory.iter()

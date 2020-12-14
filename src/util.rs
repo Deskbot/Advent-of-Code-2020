@@ -27,3 +27,29 @@ pub fn option_bind<T,U>(opt: Option<T>, f: fn(T) -> Option<U>) -> Option<U> {
         None => None,
     }
 }
+
+pub fn sublists<T>(iter: &dyn Iterator<Item = T>) -> Vec<Vec<T>> {
+    let elem = iter.next();
+
+    if let Some(elem) = elem {
+        let rest = sublists(iter);
+
+        let mut result = Vec::new();
+
+        // add combos without the current element
+        result.extend(rest);
+
+        // add combos with the current element
+        let mut rest_with_elem = rest.iter_mut()
+            .map(|&mut subl| {
+                subl.push(elem);
+                return subl;
+            });
+
+        result.extend(rest_with_elem);
+
+        return result;
+    }
+
+    return vec![];
+}

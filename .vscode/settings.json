@@ -3,9 +3,11 @@
         "arent",
         "coord",
         "deps",
+        "elem",
         "fmap",
         "joltage",
         "joltages",
-        "mult"
+        "mult",
+        "subl"
     ]
 }
