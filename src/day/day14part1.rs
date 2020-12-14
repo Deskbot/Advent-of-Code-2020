@@ -72,6 +72,7 @@ impl DockerProgram {
                     self.zero_mask = zeros;
                 },
                 &Mem(address, value) => {
+                    let address = address as usize;
                     let result = Self::apply_ones(value, self.one_mask);
                     let result = Self::apply_zeros(result, self.zero_mask);
 

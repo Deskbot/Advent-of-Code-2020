@@ -5,7 +5,7 @@ use std::fs;
 
 pub enum Instruction {
     Mask(String),
-    Mem(usize, i64),
+    Mem(i64, i64),
 }
 
 impl Instruction {
@@ -22,7 +22,7 @@ impl Instruction {
 
         // get(1) gets the first bracketed section
         let mem_addr = regex.captures(lhs).unwrap().get(1).unwrap().as_str(); // WTF RUST ???????
-        let mem_addr = mem_addr.parse::<usize>().unwrap();
+        let mem_addr = mem_addr.parse::<i64>().unwrap();
         let assign = assign.parse::<i64>().unwrap();
 
         return Instruction::Mem(mem_addr, assign);
@@ -48,7 +48,7 @@ fn part2(input: &str) -> i64 {
     let mut program = day14part2::DockerProgram::parse(input);
     program.run();
 
-    return program.memory.iter()
+    return program.memory.values()
         .fold(0, |acc,next| acc + next);
 }
 

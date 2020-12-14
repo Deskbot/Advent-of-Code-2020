@@ -1,9 +1,10 @@
+use std::collections::HashMap;
 use crate::day::day14::Instruction;
 use crate::util::sublists;
 
 pub struct DockerProgram {
     instructions: Vec<Instruction>,
-    pub memory: Vec<i64>,
+    pub memory: HashMap<i64,i64>,
     one_mask: i64, // 1 = 1
     x_mask: i64, // 1 = X
 }
@@ -14,7 +15,7 @@ impl DockerProgram {
             instructions: input.lines()
                 .map(Instruction::parse_instruction)
                 .collect(),
-            memory: Vec::new(),
+            memory: HashMap::new(),
             one_mask: 0,
             x_mask: 0,
         }
@@ -78,7 +79,7 @@ impl DockerProgram {
         num & !zero_bit_field
     }
 
-    fn addresses(&self, address: i64, results: &mut Vec<usize>) {
+    fn addresses(&self, address: i64, results: &mut Vec<i64>) {
         let mut result = Self::apply_ones(address, self.one_mask);
 
         // get a list of digits that are xs
@@ -95,7 +96,7 @@ impl DockerProgram {
             // only apply digits in the x digit columns
             result = Self::apply_ones(result, self.x_mask & ones_mask);
             result = Self::apply_zeros(result, self.x_mask & zeros_mask);
-            results.push(result as usize);
+            results.push(result);
         }
     }
 
@@ -111,15 +112,10 @@ impl DockerProgram {
                 },
                 &Mem(base_addr, value) => {
                     let mut addresses = Vec::new();
-                    self.addresses(base_addr as i64, &mut addresses);
+                    self.addresses(base_addr, &mut addresses);
 
                     for address in addresses {
-                        // ensure memory is big enough
-                        if self.memory.len() <= address {
-                            self.memory.resize(address + 1 , 0);
-                        }
-
-                        self.memory[address as usize] = value;
+                        self.memory.insert(address, value);
                     }
                 },
             };
