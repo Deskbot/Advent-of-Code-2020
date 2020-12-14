@@ -9,22 +9,21 @@ enum Instruction {
 impl Instruction {
     pub fn parse_instruction(line: &str) -> Instruction {
         let mut itr = line.split(" = ");
-        let target = itr.next().unwrap();
+        let lhs = itr.next().unwrap();
         let assign = itr.next().unwrap();
 
-        if target == "mask" {
+        if lhs == "mask" {
             return Instruction::Mask(assign.to_string());
         }
 
         let regex = Regex::new(r"^mem\[([0-9]+)\]$").unwrap();
 
-        println!("{} ", target);
-        let target = regex.find(target).unwrap().as_str()
-        .parse::<i64>().unwrap();
-
+        // get(1) gets the first bracketed section
+        let mem_addr = regex.captures(lhs).unwrap().get(1).unwrap().as_str(); // WTF RUST ???????
+        let mem_addr = mem_addr.parse::<i64>().unwrap();
         let assign = assign.parse::<i64>().unwrap();
 
-        return Instruction::Mem(target, assign);
+        return Instruction::Mem(mem_addr, assign);
     }
 }
 
@@ -102,6 +101,12 @@ impl DockerProgram {
                 &Mem(address, value) => {
                     let result = Self::apply_ones(value, self.one_mask);
                     let result = Self::apply_zeros(result, self.zero_mask);
+
+                    // ensure memory is big enough
+                    if self.memory.len() <= address as usize {
+                        self.memory.resize(address as usize + 1 , 0);
+                    }
+
                     self.memory[address as usize] = result;
                 },
             };
