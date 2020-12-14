@@ -3,7 +3,7 @@ use std::fs;
 
 enum Instruction {
     Mask(String),
-    Mem(i64, i64),
+    Mem(usize, i64),
 }
 
 impl Instruction {
@@ -20,7 +20,7 @@ impl Instruction {
 
         // get(1) gets the first bracketed section
         let mem_addr = regex.captures(lhs).unwrap().get(1).unwrap().as_str(); // WTF RUST ???????
-        let mem_addr = mem_addr.parse::<i64>().unwrap();
+        let mem_addr = mem_addr.parse::<usize>().unwrap();
         let assign = assign.parse::<i64>().unwrap();
 
         return Instruction::Mem(mem_addr, assign);
@@ -103,11 +103,11 @@ impl DockerProgram {
                     let result = Self::apply_zeros(result, self.zero_mask);
 
                     // ensure memory is big enough
-                    if self.memory.len() <= address as usize {
-                        self.memory.resize(address as usize + 1 , 0);
+                    if self.memory.len() <= address {
+                        self.memory.resize(address + 1 , 0);
                     }
 
-                    self.memory[address as usize] = result;
+                    self.memory[address] = result;
                 },
             };
         }
