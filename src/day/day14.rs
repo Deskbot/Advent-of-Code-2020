@@ -56,4 +56,13 @@ fn part2(input: &str) -> i64 {
 mod tests {
     use super::*;
 
+    #[test]
+    fn part2_example() {
+        let input = "mask = 000000000000000000000000000000X1001X
+mem[42] = 100
+mask = 00000000000000000000000000000000X0XX
+mem[26] = 1";
+
+        assert_eq!(part2(input), 208);
+    }
 }

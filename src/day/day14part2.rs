@@ -44,12 +44,13 @@ impl DockerProgram {
 
         let mut digit = 1;
         for _ in 0..36 {
-            digit *= 2;
             let x_at_digit = digit & self.x_mask != 0;
 
             if x_at_digit {
                 x_digits.push(digit);
             }
+
+            digit *= 2;
         }
 
         return x_digits;
