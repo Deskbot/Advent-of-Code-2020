@@ -50,6 +50,10 @@ pub fn sublists<T: Clone>(iter: &mut dyn Iterator<Item = T>) -> Vec<(Vec<T>,Vec<
             result.push((with.clone(), without));
         }
 
+        // add the cases with only this element to consider
+        result.push((vec![elem.clone()], vec![]));
+        result.push((vec![], vec![elem]));
+
         return result;
     }
 
