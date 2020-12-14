@@ -62,7 +62,7 @@ impl DockerProgram {
         1 | 0 | 1
         1 | 1 | 1
     */
-    fn apply_one(num: i64, one_bit_field: i64) -> i64 {
+    fn apply_ones(num: i64, one_bit_field: i64) -> i64 {
         num | one_bit_field
     }
 
@@ -74,27 +74,29 @@ impl DockerProgram {
         1 | 0 | 1
         1 | 1 | 0
     */
-    fn apply_zero(num: i64, zero_bit_field: i64) -> i64 {
+    fn apply_zeros(num: i64, zero_bit_field: i64) -> i64 {
         num & !zero_bit_field
     }
 
-    fn addresses(&self, address: i64, results: &mut Vec<i64>) {
-        let mut result = Self::apply_one(address, self.one_mask);
+    fn addresses(&self, address: i64, results: &mut Vec<usize>) {
+        let mut result = Self::apply_ones(address, self.one_mask);
 
         // get a list of digits that are xs
         let x_digits = self.all_x_mask_digits();
 
-        // get every combination of digits that are x
-        for subl in sublists(&x_digits.iter()) {
-            // turns that combination of digits back into a mask
-            let mask = subl.iter()
+        // split the x digits into every combination of which digits are one and zero
+        for (ones, zeros) in sublists(&mut x_digits.iter()) {
+            // turns that combination of digits back into masks
+            let ones_mask = ones.iter()
+                .fold(0, |acc, &&sum| acc + sum);
+            let zeros_mask = zeros.iter()
                 .fold(0, |acc, &&sum| acc + sum);
 
-            // that combination of digits
-            results.push(Self::apply_one(address, mask));
-            results.push(Self::apply_zero(address, mask));
+            // only apply digits in the x digit columns
+            result = Self::apply_ones(result, self.x_mask & ones_mask);
+            result = Self::apply_zeros(result, self.x_mask & zeros_mask);
+            results.push(result as usize);
         }
-
     }
 
     pub fn run(&mut self) {
@@ -107,15 +109,18 @@ impl DockerProgram {
                     self.one_mask = ones;
                     self.x_mask = xs;
                 },
-                &Mem(address, value) => {
+                &Mem(base_addr, value) => {
+                    let mut addresses = Vec::new();
+                    self.addresses(base_addr as i64, &mut addresses);
 
+                    for address in addresses {
+                        // ensure memory is big enough
+                        if self.memory.len() <= address {
+                            self.memory.resize(address + 1 , 0);
+                        }
 
-                    // ensure memory is big enough
-                    if self.memory.len() <= address {
-                        self.memory.resize(address + 1 , 0);
+                        self.memory[address as usize] = value;
                     }
-
-                    self.memory[address] = result;
                 },
             };
         }

@@ -28,25 +28,27 @@ pub fn option_bind<T,U>(opt: Option<T>, f: fn(T) -> Option<U>) -> Option<U> {
     }
 }
 
-pub fn sublists<T>(iter: &dyn Iterator<Item = T>) -> Vec<Vec<T>> {
+pub fn sublists<T: Clone>(iter: &mut dyn Iterator<Item = T>) -> Vec<(Vec<T>,Vec<T>)> {
     let elem = iter.next();
 
     if let Some(elem) = elem {
-        let rest = sublists(iter);
-
         let mut result = Vec::new();
 
-        // add combos without the current element
-        result.extend(rest);
+        let rest = sublists(iter);
 
-        // add combos with the current element
-        let mut rest_with_elem = rest.iter_mut()
-            .map(|&mut subl| {
-                subl.push(elem);
-                return subl;
-            });
+        // add all the sublists with this element
+        for (with, without) in &rest {
+            let mut with = with.clone();
+            with.push(elem.clone());
+            result.push((with, without.clone()));
+        }
 
-        result.extend(rest_with_elem);
+        // add all the sublists without this element
+        for (with, without) in &rest {
+            let mut without = without.clone();
+            without.push(elem.clone());
+            result.push((with.clone(), without));
+        }
 
         return result;
     }
