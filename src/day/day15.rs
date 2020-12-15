@@ -14,27 +14,27 @@ fn part1(starting_numbers: &[i64]) -> i64 {
     }
 
     let mut last_number = *starting_numbers.last().unwrap();
-    let mut last_index = starting_numbers.len() as i64; // 1 indexed
+    let mut last_turn = starting_numbers.len() as i64; // 1 indexed
 
-    while last_index < 2020 {
-        let next_number;
+    while last_turn < 2020 {
+        let this_number;
 
         if let Some(&index_last_time) = last_position.get(&last_number) {
-            next_number = last_index - index_last_time;
+            this_number = last_turn - index_last_time;
         } else {
-            next_number = 0;
+            this_number = 0;
         }
 
-        let next_index = last_index + 1;
-        last_position.insert(last_number, next_index);
+        let this_turn = last_turn + 1;
+        last_position.insert(this_number, this_turn);
 
-        last_index += 1;
-        last_number = next_number;
+        last_turn += 1;
+        last_number = this_number;
 
         println!("{:?}", last_position);
     }
 
-    assert_eq!(last_index, 2020);
+    assert_eq!(last_turn, 2020);
 
     return last_number;
 }
