@@ -3,10 +3,18 @@ use std::collections::HashMap;
 
 pub fn day15() {
     println!("Part 1: {}", part1(&[15,5,1,4,7,0]));
-    // println!("Part 2: {}", part2(&file));
+    println!("Part 2: {}", part2(&[15,5,1,4,7,0]));
 }
 
 fn part1(starting_numbers: &[i64]) -> i64 {
+    get_nth_number(starting_numbers, 2020)
+}
+
+fn part2(starting_numbers: &[i64]) -> i64 {
+    get_nth_number(starting_numbers, 30000000)
+}
+
+fn get_nth_number(starting_numbers: &[i64], n: i64) -> i64 {
     let mut penultimate_turns = HashMap::<i64,i64>::new();
 
     for (index, &num) in starting_numbers.iter().enumerate() {
@@ -16,7 +24,7 @@ fn part1(starting_numbers: &[i64]) -> i64 {
     let mut last_number = *starting_numbers.last().unwrap();
     let mut last_turn = starting_numbers.len() as i64; // 1 indexed
 
-    while last_turn < 2020 {
+    while last_turn < n {
         let this_number;
 
         if let Some(&penultimate_turn) = penultimate_turns.get(&last_number) {
@@ -29,11 +37,9 @@ fn part1(starting_numbers: &[i64]) -> i64 {
 
         last_turn += 1;
         last_number = this_number;
-
-        println!("{:?}", penultimate_turns);
     }
 
-    assert_eq!(last_turn, 2020);
+    assert_eq!(last_turn, n);
 
     return last_number;
 }
