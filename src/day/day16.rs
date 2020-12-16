@@ -160,11 +160,9 @@ fn part2(input: &str) -> i64 {
             possible_field_indexes.remove(&name);
 
             // we know what this index is, remove it from the other possibilities
-            possible_field_indexes.map
-                .iter_mut()
-                .for_each(|(_, indexes)| {
-                    indexes.retain(|&i| i != index); // keep indexes that aren't the one we found
-                });
+            for (_, indexes) in &mut possible_field_indexes.map {
+                indexes.retain(|&i| i != index); // keep indexes that aren't the one we found
+            }
         }
     }
 
