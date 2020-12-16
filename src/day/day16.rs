@@ -1,7 +1,7 @@
 use regex::Regex;
 use std::{collections::HashMap, fs};
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 struct Range {
     min: i64,
     max: i64,
@@ -13,9 +13,9 @@ impl Range {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone,Debug)]
 struct Rule {
-    name: String,
+    pub name: String,
     // luckily it looks like these ranges don't overlap
     range_1: Range,
     range_2: Range
@@ -26,7 +26,7 @@ impl Rule {
         let reg = Regex::new(r"([a-z ]+): ([0-9]+)-([0-9]+) or ([0-9]+)-([0-9]+)").unwrap();
         let itr = reg.captures(s).unwrap();
 
-        let name = itr.get(2).unwrap().as_str().to_string();
+        let name = itr.get(1).unwrap().as_str().to_string();
         let range_1 = Range {
             min: itr.get(2).unwrap().as_str().parse::<i64>().unwrap(),
             max: itr.get(3).unwrap().as_str().parse::<i64>().unwrap(),
@@ -78,7 +78,6 @@ impl Ticket {
     }
 
     pub fn get(&self, index: usize) -> i64 {
-        println!("{:?}", self.numbers);
         *self.numbers.get(index).unwrap()
     }
 
@@ -134,6 +133,7 @@ fn part2(input: &str) -> i64 {
             .filter(|rule| fields.all(|field| rule.within(field)))
             .collect::<Vec<&Rule>>();
 
+        println!("{:?}", matching_rules.iter().map(|rule|&rule.name).collect::<Vec<&String>>());
         assert_eq!(matching_rules.len(), 1);
 
         let &matching_rule = matching_rules.first().unwrap();
