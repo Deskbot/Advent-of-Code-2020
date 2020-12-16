@@ -74,6 +74,24 @@ pub fn day16() {
 }
 
 fn part1(input: &str) -> i64 {
+    let (rules, _, nearby_tickets) = parse_input(input);
+
+    let mut error_rate = 0;
+
+    for ticket in nearby_tickets {
+        for number in ticket.numbers {
+            let valid = rules.iter().any(|rule| rule.within(number));
+            if !valid {
+                error_rate += number;
+                break;
+            }
+        }
+    }
+
+    return error_rate;
+}
+
+fn parse_input(input: &str) -> (Vec<Rule>, Ticket, Vec<Ticket>) {
     let mut chunks = input.split("\n\n");
     let rules = chunks.next().unwrap();
     let my_ticket = chunks.next().unwrap();
@@ -91,21 +109,10 @@ fn part1(input: &str) -> i64 {
 
     let nearby_tickets = nearby_tickets
         .split("\n").skip(1)
-        .map(Ticket::parse);
+        .map(Ticket::parse)
+        .collect();
 
-    let mut error_rate = 0;
-
-    for ticket in nearby_tickets {
-        for number in ticket.numbers {
-            let valid = rules.iter().any(|rule| rule.within(number));
-            if !valid {
-                error_rate += number;
-                break;
-            }
-        }
-    }
-
-    return error_rate;
+    return (rules, my_ticket, nearby_tickets);
 }
 
 
