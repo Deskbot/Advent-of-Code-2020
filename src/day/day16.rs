@@ -78,7 +78,12 @@ impl Ticket {
     }
 
     pub fn get(&self, index: usize) -> i64 {
+        println!("{:?}", self.numbers);
         *self.numbers.get(index).unwrap()
+    }
+
+    pub fn len(&self) -> usize {
+        self.numbers.len()
     }
 }
 
@@ -117,8 +122,9 @@ fn part2(input: &str) -> i64 {
 
     let mut field_name_index = HashMap::<String,usize>::new();
 
-    let field_count = 20;
+    let field_count = my_ticket.len();
     for index in 0..field_count {
+        println!("{}", index);
         // look at all of a single field across all tickets
 
         let mut fields = nearby_tickets.clone().map(|ticket| ticket.get(index));
@@ -170,6 +176,7 @@ fn parse_input(input: &str) -> (Vec<Rule>, Ticket, Vec<Ticket>) {
 
     let nearby_tickets = nearby_tickets
         .split("\n").skip(1)
+        .filter(|line| !line.is_empty()) // this is needed for some reason
         .map(Ticket::parse)
         .collect();
 
