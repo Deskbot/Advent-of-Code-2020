@@ -44,7 +44,7 @@ impl Rule {
     }
 
     pub fn within(&self, n: i64) -> bool {
-        self.range_1.within(n) && self.range_2.within(n)
+        self.range_1.within(n) || self.range_2.within(n)
     }
 }
 
@@ -97,8 +97,8 @@ fn part1(input: &str) -> i64 {
 
     for ticket in nearby_tickets {
         for number in ticket.numbers {
-            let invalid = rules.iter().any(|rule| !rule.within(number));
-            if invalid {
+            let valid = rules.iter().any(|rule| rule.within(number));
+            if !valid {
                 error_rate += number;
                 break;
             }
@@ -106,4 +106,29 @@ fn part1(input: &str) -> i64 {
     }
 
     return error_rate;
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn part1_example() {
+        assert_eq!(
+            part1("class: 1-3 or 5-7
+row: 6-11 or 33-44
+seat: 13-40 or 45-50
+
+your ticket:
+7,1,14
+
+nearby tickets:
+7,3,47
+40,4,50
+55,2,20
+38,6,12"),
+            71
+        );
+    }
 }
