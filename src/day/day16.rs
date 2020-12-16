@@ -1,3 +1,4 @@
+use crate::util::OneToManySortedMap;
 use regex::Regex;
 use std::{collections::HashMap, fs};
 
@@ -118,37 +119,60 @@ fn part2(input: &str) -> i64 {
     let nearby_tickets = nearby_tickets.into_iter()
         .filter(|ticket| ticket.is_valid(&rules));
 
-    let mut field_name_index = HashMap::<String,usize>::new();
+    let mut possible_field_indexes = OneToManySortedMap::<&String,usize>::new();
 
     let field_count = my_ticket.len();
     for index in 0..field_count {
         // look at all of a single field across all tickets
-        let fields = nearby_tickets.clone().map(|ticket| ticket.get(index));
+        let fields = nearby_tickets.clone()
+            .map(|ticket| ticket.get(index))
+            .collect::<Vec<i64>>();
 
         // get all the rules that this field is within on all tickets
         let matching_rules = rules.iter()
-            .filter(|rule| fields.clone().all(|field| rule.within(field)))
+            .filter(|rule| fields.iter().all(|&field| rule.within(field)))
             .collect::<Vec<&Rule>>();
 
-        // assert_eq!(matching_rules.len(), 1);
-
-        let &matching_rule = matching_rules.first().unwrap();
-
-        // assert!(field_name_index.get(&matching_rule.name).is_none());
-
-        field_name_index.insert(matching_rule.name.clone(), index);
+        for matching_rule in matching_rules {
+            possible_field_indexes.insert(&matching_rule.name, index);
+        }
     }
 
-    // hope that they all only match 1.
+    // find out what index each field must be
 
-    // otherwise write more code
+    println!("{:?}", possible_field_indexes);
+
+    let mut field_indexes = HashMap::<&String, usize>::new();
+
+    while field_indexes.len() < field_count {
+        // add all known fields to the map of known fields
+        let newly_known =
+            possible_field_indexes.map.iter()
+                .filter(|(_, indexes)| indexes.len() == 1)
+                .map(|(&name, indexes)| (name, *indexes.first().unwrap()))
+                .collect::<Vec<(&String, usize)>>();
+
+        for (name, index) in newly_known {
+            // add discovered index
+            field_indexes.insert(name, index);
+
+            // we've already found this one, don't find it again
+            possible_field_indexes.remove(&name);
+
+            // we know what this index is, remove it from the other possibilities
+            possible_field_indexes.map
+                .iter_mut()
+                .for_each(|(_, indexes)| {
+                    indexes.retain(|&i| i != index); // keep indexes that aren't the one we found
+                });
+        }
+    }
 
     // multiply the departure fields
-
     return
-        field_name_index.keys()
+        field_indexes.keys()
             .filter(|name| name.starts_with("departure"))
-            .map(|name| field_name_index.get(name).unwrap())
+            .map(|name| field_indexes.get(name).unwrap())
             .map(|&index| my_ticket.get(index))
             .fold(1, |acc, next| acc * next);
 }

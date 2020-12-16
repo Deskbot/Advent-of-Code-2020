@@ -1,3 +1,32 @@
+use std::{collections::HashMap, hash::Hash};
+
+#[derive(Debug)]
+pub struct OneToManySortedMap<K: Clone + Eq + Hash, V: Clone + Ord> {
+    pub map: HashMap<K, Vec<V>>,
+}
+
+impl<K: Clone + Eq + Hash, V: Clone + Ord> OneToManySortedMap<K,V> {
+    pub fn new() -> OneToManySortedMap<K,V> {
+        OneToManySortedMap {
+            map: HashMap::<K,Vec<V>>::new()
+        }
+    }
+
+    pub fn remove(&mut self, key: &K) {
+        self.map.remove(key);
+    }
+
+    pub fn insert(&mut self, key: K, val: V) {
+        self.map.entry(key)
+            .and_modify(|many| {
+                many.push(val.clone());
+                many.sort();
+            })
+            .or_insert(vec![val]);
+    }
+}
+
+
 pub fn both<T,U>(opt1: Option<T>, opt2: Option<U>) -> Option<(T,U)> {
     if opt1.is_none() {
         println!("opt1 none");
