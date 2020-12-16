@@ -1,5 +1,5 @@
 use regex::Regex;
-use std::fs;
+use std::{collections::HashMap, fs};
 
 #[derive(Clone)]
 struct Range {
@@ -47,7 +47,7 @@ impl Rule {
         self.range_1.within(n) || self.range_2.within(n)
     }
 }
-
+#[derive(Clone)]
 struct Ticket {
     numbers: Vec<i64>
 }
@@ -64,13 +64,29 @@ impl Ticket {
             numbers
         }
     }
+
+    pub fn is_valid(&self, rules: &Vec<Rule>) -> bool {
+        // logic copied from part1
+        for &number in &self.numbers {
+            let valid = rules.iter().any(|rule| rule.within(number));
+            if !valid {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    pub fn get(&self, index: usize) -> i64 {
+        *self.numbers.get(index).unwrap()
+    }
 }
 
 pub fn day16() {
     let file = fs::read_to_string("input/day16.txt").expect("input not found");
 
     println!("Part 1: {}", part1(&file));
-    // println!("Part 2: {}", part2(&file));
+    println!("Part 2: {}", part2(&file));
 }
 
 fn part1(input: &str) -> i64 {
@@ -89,6 +105,51 @@ fn part1(input: &str) -> i64 {
     }
 
     return error_rate;
+}
+
+fn part2(input: &str) -> i64 {
+    let (rules, my_ticket, nearby_tickets) = parse_input(input);
+
+    // filter invalid tickets
+    let nearby_tickets = nearby_tickets.into_iter()
+        .filter(|ticket| ticket.is_valid(&rules));
+
+
+    let mut field_name_index = HashMap::<String,usize>::new();
+
+    let field_count = 20;
+    for index in 0..field_count {
+        // look at all of a single field across all tickets
+
+        let mut fields = nearby_tickets.clone().map(|ticket| ticket.get(index));
+
+        // get all the rules that all fields of all tickets are within
+        let matching_rules = rules.iter()
+            .filter(|rule| fields.all(|field| rule.within(field)))
+            .collect::<Vec<&Rule>>();
+
+        assert_eq!(matching_rules.len(), 1);
+
+        let &matching_rule = matching_rules.first().unwrap();
+
+        assert!(field_name_index.get(&matching_rule.name).is_none());
+
+        field_name_index.insert(matching_rule.name.clone(), index);
+    }
+
+
+    // hope that they all only match 1.
+
+    // otherwise write more code
+
+    // sum the departure fields
+
+    return
+        field_name_index.keys()
+            .filter(|name| name.starts_with("departure"))
+            .map(|name| field_name_index.get(name).unwrap())
+            .map(|&index| my_ticket.get(index))
+            .fold(0, |acc, next| acc + next);
 }
 
 fn parse_input(input: &str) -> (Vec<Rule>, Ticket, Vec<Ticket>) {
