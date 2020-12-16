@@ -114,70 +114,29 @@ fn part1(input: &str) -> i64 {
 fn part2(input: &str) -> i64 {
     let (rules, my_ticket, nearby_tickets) = parse_input(input);
 
-    // println!("{:?}", rules);
-
     // filter invalid tickets
     let nearby_tickets = nearby_tickets.into_iter()
         .filter(|ticket| ticket.is_valid(&rules));
 
     let mut field_name_index = HashMap::<String,usize>::new();
 
-    // println!("{:?}", rules.iter().map(|rule| &rule.name).collect::<Vec<&String>>());
-
     let field_count = my_ticket.len();
     for index in 0..field_count {
-        println!("\n\n{}", index);
         // look at all of a single field across all tickets
-
-        // println!("{:?}", rules.iter().map(|rule| &rule.name).collect::<Vec<&String>>());
-
-        let mut fields = nearby_tickets.clone().map(|ticket| ticket.get(index));
-
-        // if index == 13 {
-
-        //     println!("Fields: {:?}", fields.clone().collect::<Vec<i64>>());
-
-        //     println!("{:?}", rules.iter().map(|rule| {
-        //         let poop = fields.clone().map(|field| (field, rule.within(field)))
-        //             .collect::<Vec<(i64, bool)>>();
-
-        //         (&rule.name, poop)
-        //     }).collect::<Vec<(&String, Vec<(i64,bool)>)>>());
-        // }
+        let fields = nearby_tickets.clone().map(|ticket| ticket.get(index));
 
         // get all the rules that this field is within on all tickets
         let matching_rules = rules.iter()
-            .filter(|rule| {
-                let poop = fields.clone().all(|field| rule.within(field));
-                println!("{:?} {}", rule, poop);
-
-                // let mut poop2 = true;
-                // for field in fields {
-                //     if !rule.within(field) {
-                //         poop2 = false;
-                //         break;
-                //     }
-                // }
-
-                poop
-                // poop2
-            })
+            .filter(|rule| fields.clone().all(|field| rule.within(field)))
             .collect::<Vec<&Rule>>();
 
-        // println!("{:?}", matching_rules.iter().map(|rule|&rule.name).collect::<Vec<&String>>());
         // assert_eq!(matching_rules.len(), 1);
 
-        // println!("{:?}", rules.iter().map(|rule| &rule.name).collect::<Vec<&String>>());
-
         let &matching_rule = matching_rules.first().unwrap();
-
-        // println!("{:?}", rules.iter().map(|rule| &rule.name).collect::<Vec<&String>>());
 
         // assert!(field_name_index.get(&matching_rule.name).is_none());
 
         field_name_index.insert(matching_rule.name.clone(), index);
-
-        // println!("{:?}\n\n\n\n\n\n\n", rules.iter().map(|rule| &rule.name).collect::<Vec<&String>>());println!("{:?}", rules.len());
     }
 
     // hope that they all only match 1.
