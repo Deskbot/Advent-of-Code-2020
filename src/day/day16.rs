@@ -148,14 +148,14 @@ fn part2(input: &str) -> i64 {
 
     // otherwise write more code
 
-    // sum the departure fields
+    // multiply the departure fields
 
     return
         field_name_index.keys()
             .filter(|name| name.starts_with("departure"))
             .map(|name| field_name_index.get(name).unwrap())
             .map(|&index| my_ticket.get(index))
-            .fold(0, |acc, next| acc + next);
+            .fold(1, |acc, next| acc * next);
 }
 
 fn parse_input(input: &str) -> (Vec<Rule>, Ticket, Vec<Ticket>) {
