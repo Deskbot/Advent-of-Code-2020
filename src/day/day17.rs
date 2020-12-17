@@ -93,23 +93,38 @@ impl Conway3D {
         }
     }
 
-    fn neighbours(&self, x: i64, y: i64, z: i64) -> Vec<State> {
-        // I thought writing all the combinations would make it too easy to miss one.
+    fn neighbours(&self, x: i64, y: i64, z: i64) -> Vec<&State> {
+        vec![
+            self.get(x-1,y-1,z-1),
+            self.get(x-1,y-1,z),
+            self.get(x-1,y-1,z+1),
+            self.get(x-1,y,  z-1),
+            self.get(x-1,y,  z),
+            self.get(x-1,y,  z+1),
+            self.get(x-1,y+1,z-1),
+            self.get(x-1,y+1,z),
+            self.get(x-1,y+1,z+1),
 
-        let numbers = vec![-1,0,1];
+            self.get(x,  y-1,z-1),
+            self.get(x,  y-1,z),
+            self.get(x,  y-1,z+1),
+            self.get(x,  y,  z-1),
+         // self.get(x,  y,  z),
+            self.get(x,  y,  z+1),
+            self.get(x,  y+1,z-1),
+            self.get(x,  y+1,z),
+            self.get(x,  y+1,z+1),
 
-        // This is a nightmare. I don't want to have to collect here.
-        let poop = numbers.iter().combinations(3).collect::<Vec<Vec<&i64>>>();
-        let offsets = poop
-            .iter()
-            .map(|list| (*list.get(0).unwrap(), *list.get(1).unwrap(), *list.get(2).unwrap()))
-            .filter(|(&a,&b,&c)| !(a==0 && b==0 && c==0))
-            .map(|(a,b,c)| (a.clone(),b.clone(),c.clone())) // the pain
-            .collect::<Vec<(i64,i64,i64)>>();
-
-        return offsets.into_iter()
-            .map(|(x_off,y_off,z_off)| self.get(x + x_off, y + y_off, z + z_off).clone())
-            .collect();
+            self.get(x+1,y-1,z-1),
+            self.get(x+1,y-1,z),
+            self.get(x+1,y-1,z+1),
+            self.get(x+1,y,  z-1),
+            self.get(x+1,y,  z),
+            self.get(x+1,y,  z+1),
+            self.get(x+1,y+1,z-1),
+            self.get(x+1,y+1,z),
+            self.get(x+1,y+1,z+1),
+        ]
     }
 
     pub fn step(&mut self) -> Conway3D {
@@ -120,7 +135,7 @@ impl Conway3D {
                 for (&z, cell) in row {
                     let neighbours = self.neighbours(x,y,z);
                     let alive_neighbours = neighbours.into_iter()
-                        .filter(|n| *n == State::Alive)
+                        .filter(|n| **n == State::Alive)
                         .count() as i64;
 
                     let next_state = cell.next(alive_neighbours);
