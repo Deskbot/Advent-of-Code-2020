@@ -156,6 +156,21 @@ impl Conway3D {
         ]
     }
 
+    pub fn print(&self) {
+        println!("---");
+
+        for (depth,plane) in &self.space {
+            print!("x={}\n", depth);
+
+            for (_,row) in plane {
+                for (_,cell) in row {
+                    print!("{:?}", cell);
+                }
+                print!("\n");
+            }
+        }
+    }
+
     pub fn step(&mut self) -> Conway3D {
         let mut c = Conway3D::new();
 
@@ -201,17 +216,15 @@ fn part1(input: &str) -> i64 {
     // make conway structure
     let mut conway = Conway3D::new();
 
-    println!("{:?}", conway);
-
     // insert plane
     conway.insert_plane(input_plane);
 
-    println!("{:?}", conway);
+    conway.print();
 
     // increment 6 times
     for _ in 1..=6 {
         conway = conway.step();
-        println!("{:?}", conway);
+        conway.print();
     }
 
     // return count alive
