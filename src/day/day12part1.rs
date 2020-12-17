@@ -1,5 +1,5 @@
+use crate::day::day12::Action;
 use crate::point::Point;
-use crate::Action;
 
 pub struct Ship {
     pub position: Point,
