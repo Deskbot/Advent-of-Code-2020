@@ -5,6 +5,7 @@
         "deps",
         "elem",
         "fmap",
+        "itertools",
         "joltage",
         "joltages",
         "mult",
