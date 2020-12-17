@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 use std::fs;
-use itertools::Itertools;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 enum State {
@@ -37,13 +36,25 @@ impl State {
 
 #[derive(Debug)]
 struct Conway3D {
-    space: HashMap::<i64, HashMap<i64, HashMap<i64, State>>>
+    space: HashMap::<i64, HashMap<i64, HashMap<i64, State>>>,
+    min_x: i64,
+    max_x: i64,
+    min_y: i64,
+    max_y: i64,
+    min_z: i64,
+    max_z: i64,
 }
 
 impl Conway3D {
     pub fn new() -> Conway3D {
         Conway3D {
-            space: HashMap::new()
+            space: HashMap::new(),
+            min_x: 0,
+            max_x: 0,
+            min_y: 0,
+            max_y: 0,
+            min_z: 0,
+            max_z: 0,
         }
     }
 
@@ -63,7 +74,7 @@ impl Conway3D {
         return alive_count;
     }
 
-    fn get (&self, x: i64, y: i64, z: i64) -> &State {
+    fn get(&self, x: i64, y: i64, z: i64) -> &State {
         let result = self.space
             .get(&x)
             .and_then(|plane| plane.get(&y))
@@ -77,6 +88,24 @@ impl Conway3D {
     }
 
     fn insert(&mut self, state: State, x: i64, y: i64, z: i64) {
+        if x < self.min_x {
+            self.min_x = x;
+        } else if x > self.max_x {
+            self.max_x = x;
+        }
+
+        if y < self.min_y {
+            self.min_y = y;
+        } else if y < self.max_y {
+            self.max_y = y;
+        }
+
+        if z < self.min_z {
+            self.min_z = z;
+        } else if z < self.max_z {
+            self.max_z = z;
+        }
+
         self.space
             .entry(x).or_insert(HashMap::new())
             .entry(y).or_insert(HashMap::new())
@@ -130,9 +159,13 @@ impl Conway3D {
     pub fn step(&mut self) -> Conway3D {
         let mut c = Conway3D::new();
 
-        for (&x, plane) in &self.space {
-            for (&y, row) in plane {
-                for (&z, cell) in row {
+        // look at every recorded cell
+        // and every cell 1 step outside the bounds of what's known
+        // because those cells could change during this step
+        for x in (self.min_x-1)..=(self.max_x+1) {
+            for y in (self.min_y-1)..=(self.max_y+1) {
+                for z in (self.min_z-1)..=(self.max_z+1) {
+                    let cell = self.get(x,y,z);
                     let neighbours = self.neighbours(x,y,z);
                     let alive_neighbours = neighbours.into_iter()
                         .filter(|n| **n == State::Alive)
@@ -147,24 +180,6 @@ impl Conway3D {
         return c;
     }
 }
-
-// impl fmt::Display for Conway3D {
-//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-
-//         let mut poop = self.space.keys().collect::<Vec<&i64>>();
-//         poop.sort();
-
-//         for plane in poop {
-//             self.write_plane(f, self.space.get(plane).unwrap());
-//         }
-
-//         write!(f, "({}, {})", self.x, self.y)
-//     }
-
-//     fn write_plane(&self, f: &mut fmt::Formatter<'_>, plane: &Vec<&i64>) {
-
-//     }
-// }
 
 pub fn day17() {
     let file = fs::read_to_string("input/day17.txt").expect("input not found");
