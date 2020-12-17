@@ -141,7 +141,7 @@ pub fn day17() {
 
 fn part1(input: &str) -> i64 {
     // parse input
-    let input_plane = input.split("\n\n")
+    let input_plane = input.split("\n")
         .map(
             |line| line.chars()
                 .map(|c| State::parse(&c))
