@@ -2,7 +2,7 @@ use std::collections::HashMap;
 use std::fs;
 use itertools::Itertools;
 
-#[derive(Clone, Eq, PartialEq)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 enum State {
     Alive,
     Dead,
@@ -35,6 +35,7 @@ impl State {
     }
 }
 
+#[derive(Debug)]
 struct Conway3D {
     space: HashMap::<i64, HashMap<i64, HashMap<i64, State>>>
 }
@@ -170,12 +171,17 @@ fn part1(input: &str) -> i64 {
     // make conway structure
     let mut conway = Conway3D::new();
 
+    println!("{:?}", conway);
+
     // insert plane
     conway.insert_plane(input_plane);
+
+    println!("{:?}", conway);
 
     // increment 6 times
     for _ in 1..=6 {
         conway = conway.step();
+        println!("{:?}", conway);
     }
 
     // return count alive
