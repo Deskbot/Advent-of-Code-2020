@@ -132,6 +132,24 @@ impl Conway3D {
     }
 }
 
+// impl fmt::Display for Conway3D {
+//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+
+//         let mut poop = self.space.keys().collect::<Vec<&i64>>();
+//         poop.sort();
+
+//         for plane in poop {
+//             self.write_plane(f, self.space.get(plane).unwrap());
+//         }
+
+//         write!(f, "({}, {})", self.x, self.y)
+//     }
+
+//     fn write_plane(&self, f: &mut fmt::Formatter<'_>, plane: &Vec<&i64>) {
+
+//     }
+// }
+
 pub fn day17() {
     let file = fs::read_to_string("input/day17.txt").expect("input not found");
 
@@ -157,9 +175,25 @@ fn part1(input: &str) -> i64 {
 
     // increment 6 times
     for _ in 1..=6 {
-        conway.step();
+        conway = conway.step();
     }
 
     // return count alive
     return conway.alive_count();
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn part1_example() {
+        assert_eq!(
+            part1(".#.
+..#
+###"),
+            112
+        );
+    }
 }
