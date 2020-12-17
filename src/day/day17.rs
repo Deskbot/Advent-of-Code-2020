@@ -51,8 +51,8 @@ impl Conway3D {
 
         for plane in self.space.values() {
             for row in plane.values() {
-                for &cell in row.values() {
-                    if cell == State::Alive {
+                for cell in row.values() {
+                    if *cell == State::Alive {
                         alive_count += 1;
                     }
                 }
@@ -62,11 +62,17 @@ impl Conway3D {
         return alive_count;
     }
 
-    fn get(&mut self, x: i64, y: i64, z: i64) -> &State {
-        self.space
-            .entry(x).or_insert(HashMap::new())
-            .entry(y).or_insert(HashMap::new())
-            .entry(z).or_insert(State::Dead)
+    fn get (&self, x: i64, y: i64, z: i64) -> &State {
+        let result = self.space
+            .get(&x)
+            .and_then(|plane| plane.get(&y))
+            .and_then(|row| row.get(&z));
+
+        if let Some(state) = result {
+            return state;
+        }
+
+        return &State::Dead;
     }
 
     fn insert(&mut self, state: State, x: i64, y: i64, z: i64) {
@@ -86,32 +92,37 @@ impl Conway3D {
         }
     }
 
-    fn neighbours(&self, x: i64, y: i64, z: i64) -> Vec<&State> {
+    fn neighbours(&self, x: i64, y: i64, z: i64) -> Vec<State> {
         // I thought writing all the combinations would make it too easy to miss one.
 
         let numbers = vec![-1,0,1];
-        let offsets = numbers.iter().combinations(3)
-            .map(|list| list.iter())
-            .map(|list| (list.next().unwrap(), list.next().unwrap(), list.next().unwrap()))
-            .filter(|(&&a,&&b,&&c)| !(a==0 && b==0 && c==0));
 
-        return offsets
-            .map(|(&&x,&&y,&&z)| self.get(x,y,z))
+        // This is a nightmare. I don't want to have to collect here.
+        let poop = numbers.iter().combinations(3).collect::<Vec<Vec<&i64>>>();
+        let offsets = poop
+            .iter()
+            .map(|list| (*list.get(0).unwrap(), *list.get(1).unwrap(), *list.get(2).unwrap()))
+            .filter(|(&a,&b,&c)| !(a==0 && b==0 && c==0))
+            .map(|(a,b,c)| (a.clone(),b.clone(),c.clone())) // the pain
+            .collect::<Vec<(i64,i64,i64)>>();
+
+        return offsets.into_iter()
+            .map(|(x_off,y_off,z_off)| self.get(x + x_off, y + y_off, z + z_off).clone())
             .collect();
     }
 
     pub fn step(&mut self) -> Conway3D {
-        let c = Conway3D::new();
+        let mut c = Conway3D::new();
 
         for (&x, plane) in &self.space {
             for (&y, row) in plane {
                 for (&z, cell) in row {
                     let neighbours = self.neighbours(x,y,z);
                     let alive_neighbours = neighbours.into_iter()
-                        .filter(|&&n| n == State::Alive)
+                        .filter(|n| *n == State::Alive)
                         .count() as i64;
-                    let current_state = self.get(x, y, z);
-                    let next_state = current_state.next(alive_neighbours);
+
+                    let next_state = cell.next(alive_neighbours);
                     c.insert(next_state, x, y, z);
                 }
             }
