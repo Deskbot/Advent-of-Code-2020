@@ -37,6 +37,7 @@ fn solve(problem: &mut Chars) -> i64 {
 
     loop {
         // parse
+
         let c = match chars.next() {
             Some(c) => c,
             None => break,
@@ -48,7 +49,7 @@ fn solve(problem: &mut Chars) -> i64 {
             continue;
         }
 
-        if c == '+' || c == '*' {
+        else if c == '+' || c == '*' {
             op = Some(c);
         }
 
@@ -81,60 +82,95 @@ fn solve(problem: &mut Chars) -> i64 {
 
 
 fn solve_advanced(problem: &mut Chars) -> i64 {
-     // calculate answer str -> i64
-        // if encounter a bracket
-            // find the paired bracket
-            // calculate the answer to that substring
-            // continue
-
     let mut accumulator = 0;
-    let mut op: Option<char> = None;
     let chars = problem;
 
     loop {
-        // parse
         let c = match chars.next() {
             Some(c) => c,
             None => break,
         };
 
-        let operand: i64;
-
         if c == ' ' {
             continue;
         }
 
-        if c == '+' {
-            accumulator += solve_advanced(chars);
-            continue;
+        else if c == '+' {
+            accumulator += evaluate_next(chars);
         }
 
-        if c == '*' {
-            op = Some(c);
+        else if c == '*' {
+            accumulator *= solve_advanced(chars);
         }
 
         else if c == ')' {
             break;
         }
 
-        else {
-            if c == '(' {
-                operand = solve_advanced(chars);
-            } else {
-                // assume it's a 1 digit number
-                operand = c.to_digit(10).unwrap() as i64;
-            }
-
-            // do a calculation
-
-            accumulator = match op {
-                Some('*') => accumulator * operand,
-                None =>      operand,
-                _ => panic!("invalid operation"),
-            }
+        else if c == '(' {
+            accumulator = solve_advanced(chars);
         }
 
+        else {
+            // assume it's a 1 digit number
+            accumulator = c.to_digit(10).unwrap() as i64;
+        }
     }
 
     return accumulator;
 }
+
+fn evaluate_next(chars: &mut Chars) -> i64 {
+    loop {
+        let c = match chars.next() {
+            Some(c) => c,
+            None => panic!("expected an expression to evaluate"),
+        };
+
+        if c == ' ' {
+            continue;
+        }
+
+        if c == '(' {
+            return solve_advanced(chars);
+        }
+
+        // assume it's a number
+
+        return c.to_digit(10).unwrap() as i64;
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn part2_example_1() {
+        assert_eq!(part2("1 + (2 * 3) + (4 * (5 + 6))"), 51);
+    }
+
+    #[test]
+    fn part2_example_2() {
+        assert_eq!(part2("2 * 3 + (4 * 5)"), 46);
+    }
+
+    #[test]
+    fn part2_example_3() {
+        assert_eq!(part2("5 + (8 * 3 + 9 + 3 * 4 * 3)"), 1445);
+    }
+
+    #[test]
+    fn part2_example_4() {
+        assert_eq!(part2("5 * 9 * (7 * 3 * 3 + 9 * 3 + (8 + 6 * 4))"), 669060);
+    }
+
+    #[test]
+    fn part2_example_5() {
+        assert_eq!(part2("((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2"), 23340);
+    }
+}
+
+
+
+
