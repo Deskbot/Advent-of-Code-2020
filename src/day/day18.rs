@@ -105,6 +105,8 @@ fn solve_advanced(problem: &mut Chars, depth: usize) -> i64 {
         else if c == '*' {
             accumulator *= solve_advanced(chars, depth + 1);
             break;
+            // we don't want to continue consuming afterwards
+            // because solve_advanced effectively gives us the expression to multiply by
         }
 
         else if c == ')' {
