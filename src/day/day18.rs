@@ -99,11 +99,12 @@ fn solve_advanced(problem: &mut Chars, depth: usize) -> i64 {
         }
 
         else if c == '+' {
-            accumulator += evaluate_eager(chars, 0);
+            accumulator += plus(chars, depth + 1);
         }
 
         else if c == '*' {
-            accumulator *= solve_advanced(chars, 0);
+            accumulator *= solve_advanced(chars, depth + 1);
+            break;
         }
 
         else if c == ')' {
@@ -111,7 +112,10 @@ fn solve_advanced(problem: &mut Chars, depth: usize) -> i64 {
         }
 
         else if c == '(' {
-            return solve_advanced(chars, 0);
+            accumulator = solve_advanced(chars, depth + 1);
+            // if depth == 0 {
+            //     break;
+            // }
         }
 
         else {
@@ -119,14 +123,14 @@ fn solve_advanced(problem: &mut Chars, depth: usize) -> i64 {
             accumulator = c.to_digit(10).unwrap() as i64;
         }
 
-        println!("acc af {}", accumulator);
+        println!("{} acc af {}", "  ".repeat(depth), accumulator);
     }
-
 
     return accumulator;
 }
 
-fn evaluate_eager(chars: &mut Chars, depth: usize) -> i64 {
+fn plus(chars: &mut Chars, depth: usize) -> i64 {
+    println!("{} plus {}", "  ".repeat(depth), chars.clone().collect::<String>());
     loop {
         let c = match chars.next() {
             Some(c) => c,
@@ -146,6 +150,22 @@ fn evaluate_eager(chars: &mut Chars, depth: usize) -> i64 {
         return c.to_digit(10).unwrap() as i64;
     }
 }
+
+// fn multiply(chars: &mut Chars, depth: usize) -> i64 {
+//     println!("{} mult {}", "  ".repeat(depth), chars.clone().collect::<String>());
+//     loop {
+//         let c = match chars.next() {
+//             Some(c) => c,
+//             None => panic!("expected an expression to evaluate"),
+//         };
+
+//         if c == ' ' {
+//             continue;
+//         }
+
+//         return solve_advanced(chars, depth + 1);
+//     }
+// }
 
 #[cfg(test)]
 mod tests {
