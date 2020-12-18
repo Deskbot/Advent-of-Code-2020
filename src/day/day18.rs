@@ -1,3 +1,4 @@
+use std::str::Chars;
 use std::fs;
 
 pub fn day18() {
@@ -10,11 +11,12 @@ pub fn day18() {
 fn part1(input: &str) -> i64 {
     // split into problems
     input.lines()
-        .map(solve)
+        .map(str::chars)
+        .map(|mut c| solve(&mut c))
         .sum()
 }
 
-fn solve(problem: &str) -> i64 {
+fn solve(problem: &mut Chars) -> i64 {
      // calculate answer str -> i64
         // if encounter a bracket
             // find the paired bracket
@@ -23,12 +25,11 @@ fn solve(problem: &str) -> i64 {
 
     let mut accumulator = 0;
     let mut op: Option<char> = None;
-
-    let mut itr = problem.chars();
+    let chars = problem;
 
     loop {
         // parse
-        let c = match itr.next() {
+        let c = match chars.next() {
             Some(c) => c,
             None => break,
         };
@@ -43,23 +44,17 @@ fn solve(problem: &str) -> i64 {
             op = Some(c);
         }
 
-        else if c == '(' {
-            // find closing bracket
-            // by incrementing the iterator
-            // operand = call solve on that expression
-
-            let mut depth = 0;
-            let substr = "";
-
-            loop {
-                let next_ch = itr.next();
-                if next_ch ==
-            }
+        else if c == ')' {
+            break;
         }
 
         else {
-            // assume it's a 1 digit number
-            operand = c.to_digit(10).unwrap() as i64;
+            if c == '(' {
+                operand = solve(chars);
+            } else {
+                // assume it's a 1 digit number
+                operand = c.to_digit(10).unwrap() as i64;
+            }
 
             // do a calculation
 
@@ -73,5 +68,5 @@ fn solve(problem: &str) -> i64 {
 
     }
 
-    0
+    return accumulator;
 }
