@@ -112,7 +112,7 @@ fn solve_advanced(problem: &mut Chars, depth: usize) -> i64 {
         }
 
         else if c == '(' {
-            accumulator = solve_advanced(chars, depth + 1);
+            return solve_advanced(chars, depth + 1);
         }
 
         else {
@@ -180,7 +180,7 @@ mod tests {
 
     #[test]
     fn bug() {
-        assert_eq!(part2("(2 * (5 * 5) + 6) + 9"), 64);
+        assert_eq!(part2("(2 * (5 * 5) + 6) + 9"), 71);
     }
 }
 
