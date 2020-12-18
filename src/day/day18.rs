@@ -20,7 +20,7 @@ fn part2(input: &str) -> i64 {
     // split into problems
     input.lines()
         .map(str::chars)
-        .map(|mut c| solve_advanced(&mut c))
+        .map(|mut c| solve_advanced(&mut c, 0))
         .sum()
 }
 
@@ -81,7 +81,8 @@ fn solve(problem: &mut Chars) -> i64 {
 }
 
 
-fn solve_advanced(problem: &mut Chars) -> i64 {
+fn solve_advanced(problem: &mut Chars, depth: usize) -> i64 {
+    println!("s: {}", problem.clone().collect::<String>());
     let mut accumulator = 0;
     let chars = problem;
 
@@ -91,16 +92,19 @@ fn solve_advanced(problem: &mut Chars) -> i64 {
             None => break,
         };
 
+        println!("{} acc b4 {}", "  ".repeat(depth), accumulator);
+        println!("{} char {}",   "  ".repeat(depth), c);
+
         if c == ' ' {
             continue;
         }
 
         else if c == '+' {
-            accumulator += evaluate_next(chars);
+            accumulator += evaluate_eager(chars, depth + 1);
         }
 
         else if c == '*' {
-            accumulator *= solve_advanced(chars);
+            accumulator *= solve_advanced(chars, depth + 1);
         }
 
         else if c == ')' {
@@ -108,19 +112,23 @@ fn solve_advanced(problem: &mut Chars) -> i64 {
         }
 
         else if c == '(' {
-            accumulator = solve_advanced(chars);
+            accumulator = solve_advanced(chars, depth + 1);
         }
 
         else {
             // assume it's a 1 digit number
             accumulator = c.to_digit(10).unwrap() as i64;
         }
+
+        println!("acc af {}", accumulator);
     }
+
 
     return accumulator;
 }
 
-fn evaluate_next(chars: &mut Chars) -> i64 {
+fn evaluate_eager(chars: &mut Chars, depth: usize) -> i64 {
+    println!("{} e: {}", "  ".repeat(depth), chars.clone().collect::<String>());
     loop {
         let c = match chars.next() {
             Some(c) => c,
@@ -132,7 +140,7 @@ fn evaluate_next(chars: &mut Chars) -> i64 {
         }
 
         if c == '(' {
-            return solve_advanced(chars);
+            return solve_advanced(chars, depth + 1);
         }
 
         // assume it's a number
@@ -169,8 +177,11 @@ mod tests {
     fn part2_example_5() {
         assert_eq!(part2("((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2"), 23340);
     }
+
+    #[test]
+    fn bug() {
+        assert_eq!(part2("(2 * (5 * 5) + 6) + 9"), 64);
+    }
 }
 
-
-
-
+// (2 * (25 + 6)) + 2 + 4) * 2
