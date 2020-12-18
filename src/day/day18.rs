@@ -82,7 +82,6 @@ fn solve(problem: &mut Chars) -> i64 {
 
 
 fn solve_advanced(problem: &mut Chars, depth: usize) -> i64 {
-    println!("s: {}", problem.clone().collect::<String>());
     let mut accumulator = 0;
     let chars = problem;
 
@@ -100,11 +99,11 @@ fn solve_advanced(problem: &mut Chars, depth: usize) -> i64 {
         }
 
         else if c == '+' {
-            accumulator += evaluate_eager(chars, depth + 1);
+            accumulator += evaluate_eager(chars, 0);
         }
 
         else if c == '*' {
-            accumulator *= solve_advanced(chars, depth + 1);
+            accumulator *= solve_advanced(chars, 0);
         }
 
         else if c == ')' {
@@ -112,7 +111,7 @@ fn solve_advanced(problem: &mut Chars, depth: usize) -> i64 {
         }
 
         else if c == '(' {
-            return solve_advanced(chars, depth + 1);
+            return solve_advanced(chars, 0);
         }
 
         else {
@@ -128,7 +127,6 @@ fn solve_advanced(problem: &mut Chars, depth: usize) -> i64 {
 }
 
 fn evaluate_eager(chars: &mut Chars, depth: usize) -> i64 {
-    println!("{} e: {}", "  ".repeat(depth), chars.clone().collect::<String>());
     loop {
         let c = match chars.next() {
             Some(c) => c,
@@ -182,6 +180,9 @@ mod tests {
     fn bug() {
         assert_eq!(part2("(2 * (5 * 5) + 6) + 9"), 71);
     }
-}
 
-// (2 * (25 + 6)) + 2 + 4) * 2
+    #[test]
+    fn bug_2() {
+        assert_eq!(part2("(2 + 2) * 5 + 6"), 44);
+    }
+}
