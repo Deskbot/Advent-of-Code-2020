@@ -88,3 +88,13 @@ pub fn sublists<T: Clone>(iter: &mut dyn Iterator<Item = T>) -> Vec<(Vec<T>,Vec<
 
     return vec![];
 }
+
+pub trait SumI64 {
+    fn sum(&mut self) -> i64;
+}
+
+impl SumI64 for dyn Iterator<Item = i64> {
+    fn sum(&mut self) -> i64 {
+        self.fold(0, |acc, next| acc + next)
+    }
+}
