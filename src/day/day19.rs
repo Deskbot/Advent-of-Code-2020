@@ -60,41 +60,7 @@ fn part2(input: &str) -> i64 {
     // now modify the incorrect rules and put them in the map
     // overwriting the old rules where necessary
 
-    // These rules
-    // 8: 42 | 42 8
-    // 11: 42 31 | 42 11 31
-
-    // are equivalent to
-    // 8: 42 (8 | ε)
-    // 11: 42 (11 | ε) 31
-
-    // but we don't have brackets so turn them into their own rules
-    //   8: 42 -8
-    //  -8: 8 | ε
-    //  11: 42 -11 31
-    // -11: 11 | ε
-
-    let rule_8 = Rule {
-        number: 8,
-        sequences: vec![vec![Step::SubRule(42), Step::SubRule(-8)]],
-    };
-    let rule_negative_8 = Rule {
-        number: -8,
-        sequences: vec![vec![Step::SubRule(8)], vec![Step::Epsilon]],
-    };
-    let rule_11 = Rule {
-        number: 11,
-        sequences: vec![vec![Step::SubRule(42), Step::SubRule(-11), Step::SubRule(31)]],
-    };
-    let rule_negative_11 = Rule {
-        number: -11,
-        sequences: vec![vec![Step::SubRule(11)], vec![Step::Epsilon]],
-    };
-
-    rules_map.insert(8, rule_8);
-    rules_map.insert(-8, rule_negative_8);
-    rules_map.insert(11, rule_11);
-    rules_map.insert(-11, rule_negative_11);
+    /// ???????????????
 
     return messages_str
         .lines()
@@ -114,7 +80,6 @@ fn part2(input: &str) -> i64 {
 enum Step {
     SubRule(i64),
     Char(char),
-    Epsilon,
 }
 
 impl Step {
@@ -147,7 +112,6 @@ impl Step {
             Step::SubRule(num) => {
                 return rules.get(&num).unwrap().pass(s, rules);
             },
-            Step::Epsilon => true,
         }
     }
 }
@@ -208,7 +172,6 @@ impl Rule {
 
         return false;
     }
-
 }
 
 
