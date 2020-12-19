@@ -1,3 +1,4 @@
+use std::str::Chars;
 use std::collections::HashMap;
 use std::fs;
 
@@ -30,7 +31,15 @@ fn part1(input: &str) -> i64 {
 
     return messages_str
         .lines()
-        .filter(|message| rules_map.get(&0).unwrap().pass(&message, &rules_map))
+        .filter(|message| {
+            let mut s = message.chars();
+
+            let rule_passes = rules_map.get(&0).unwrap()
+                .pass(&mut s, &rules_map);
+
+            // rule passes and there's no more characters that need checking
+            return rule_passes && s.count() == 0;
+        })
         .count() as i64;
 }
 
@@ -54,12 +63,19 @@ impl Step {
         }
     }
 
-    pub fn pass(&self, s: &str, rules: &HashMap<i64,Rule>) -> bool {
+    pub fn pass(&self, s: &mut Chars, rules: &HashMap<i64,Rule>) -> bool {
         // if I want a char, check the char
         // else call pass on the SubRule referenced
         match *self {
-            Step::Char(c) => c == s.chars().next().unwrap(),
-            Step::SubRule(num) => rules.get(&num).unwrap().pass(s, rules),
+            Step::Char(expected_char) => {
+                match s.next() {
+                    Some(actual_char) => expected_char == actual_char,
+                    None => false,
+                }
+            },
+            Step::SubRule(num) => {
+                return rules.get(&num).unwrap().pass(s, rules);
+            },
         }
     }
 }
@@ -72,15 +88,11 @@ fn sequence_parse(s: &str) -> Sequence {
     s.split(' ').map(Step::parse).collect::<Sequence>()
 }
 
-fn sequence_pass(sequence: &Sequence, s: &mut &str, rules: &HashMap<i64,Rule>) -> bool {
+fn sequence_pass(sequence: &Sequence, s: &mut Chars, rules: &HashMap<i64,Rule>) -> bool {
     // return true if all steps pass
 
     for step in sequence {
-        if step.pass(s, rules) {
-            // inc str
-            let rest_of_str = &s[1..];
-            *s = rest_of_str;
-        } else {
+        if !step.pass(s, rules) {
             return false;
         }
     }
@@ -110,13 +122,19 @@ impl Rule {
         }
     }
 
-    pub fn pass(&self, s: &str, rules: &HashMap<i64,Rule>) -> bool {
+    pub fn pass(&self, s: &mut Chars, rules: &HashMap<i64,Rule>) -> bool {
         // return true if any sub rule passes
 
-        let mut ref_str = s;
+        for seq in &self.sequences {
+            let mut testing_s = s.clone();
+            if !sequence_pass(&seq, &mut testing_s, rules) {
+                // continue where we left off
+                sequence_pass(&seq, s, rules); // slow :(
+                return true;
+            }
+        }
 
-        return self.sequences.iter()
-            .any(|seq| sequence_pass(seq, &mut ref_str, rules))
+        return false;
     }
 
 }
