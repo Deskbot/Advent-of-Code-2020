@@ -54,9 +54,13 @@ impl Step {
         }
     }
 
-    pub fn pass(&self, s: &mut &str, rules: &HashMap<i64,Rule>) -> bool {
+    pub fn pass(&self, s: &str, rules: &HashMap<i64,Rule>) -> bool {
         // if I want a char, check the char
         // else call pass on the SubRule referenced
+        match *self {
+            Step::Char(c) => c == s.chars().next().unwrap(),
+            Step::SubRule(num) => rules.get(&num).unwrap().pass(s, rules),
+        }
     }
 }
 
@@ -68,8 +72,20 @@ pub fn sequence_parse(s: &str) -> Sequence {
     s.split(' ').map(Step::parse).collect::<Sequence>()
 }
 
-pub fn sequence_pass(sequence: &Sequence, s: &str, rules: &HashMap<i64,Rule>) -> bool {
+pub fn sequence_pass(sequence: &Sequence, s: &mut &str, rules: &HashMap<i64,Rule>) -> bool {
     // return true if all steps pass
+
+    for step in sequence {
+        if step.pass(s, rules) {
+            // inc str
+            let rest_of_str = &s[1..];
+            s = &mut rest_of_str;
+        } else {
+            return false;
+        }
+    }
+
+    return true;
 }
 
 struct Rule {
@@ -96,6 +112,11 @@ impl Rule {
 
     pub fn pass(&self, s: &str, rules: &HashMap<i64,Rule>) -> bool {
         // return true if any sub rule passes
+
+        let mut ref_str = s;
+
+        return self.sequences.iter()
+            .any(|seq| sequence_pass(seq, &mut ref_str, rules))
     }
 
 }
