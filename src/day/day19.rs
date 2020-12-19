@@ -5,7 +5,7 @@ use std::fs;
 pub fn day19() {
     let file = fs::read_to_string("input/day19.txt").expect("input not found");
 
-    // println!("Part 1: {}", part1(&file));
+    println!("Part 1: {}", part1(&file));
     println!("Part 2: {}", part2(&file));
 }
 
@@ -60,45 +60,41 @@ fn part2(input: &str) -> i64 {
     // now modify the incorrect rules and put them in the map
     // overwriting the old rules where necessary
 
+    // These rules
+    // 8: 42 | 42 8
+    // 11: 42 31 | 42 11 31
+
+    // are equivalent to
+    // 8: 42 (8 | ε)
+    // 11: 42 (11 | ε) 31
+
+    // but we don't have brackets so turn them into their own rules
+    //   8: 42 -8
+    //  -8: 8 | ε
+    //  11: 42 -11 31
+    // -11: 11 | ε
+
     let rule_8 = Rule {
         number: 8,
-        sequences: vec![
-            vec![Step::SubRule(42)],
-            vec![Step::SubRule(42), Step::SubRule(42)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42)],
-        ],
+        sequences: vec![vec![Step::SubRule(42), Step::SubRule(-8)]],
+    };
+    let rule_negative_8 = Rule {
+        number: -8,
+        sequences: vec![vec![Step::SubRule(8)], vec![Step::Epsilon]],
     };
     let rule_11 = Rule {
         number: 11,
-        sequences: vec![
-            vec![Step::SubRule(42), Step::SubRule(31)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(31), Step::SubRule(31)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31)],
-            vec![Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(42), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31), Step::SubRule(31)],
-        ],
+        sequences: vec![vec![Step::SubRule(42), Step::SubRule(-11), Step::SubRule(31)]],
+    };
+    let rule_negative_11 = Rule {
+        number: -11,
+        sequences: vec![vec![Step::SubRule(11)], vec![Step::Epsilon]],
     };
 
     rules_map.insert(8, rule_8);
+    rules_map.insert(-8, rule_negative_8);
     rules_map.insert(11, rule_11);
+    rules_map.insert(-11, rule_negative_11);
 
     return messages_str
         .lines()
@@ -114,10 +110,10 @@ fn part2(input: &str) -> i64 {
         .count() as i64;
 }
 
-#[derive(Debug)]
 enum Step {
     SubRule(i64),
-    Char(char)
+    Char(char),
+    Epsilon,
 }
 
 impl Step {
@@ -136,8 +132,6 @@ impl Step {
     }
 
     pub fn pass(&self, s: &mut Chars, rules: &HashMap<i64,Rule>) -> bool {
-        // println!("{:?} {}", self, s.clone().collect::<String>());
-
         // if I want a char, check the char
         // else call pass on the SubRule referenced
         match *self {
@@ -150,6 +144,7 @@ impl Step {
             Step::SubRule(num) => {
                 return rules.get(&num).unwrap().pass(s, rules);
             },
+            Step::Epsilon => true,
         }
     }
 }
@@ -257,69 +252,5 @@ b
 
 aa
 "), 0);
-    }
-
-    #[test]
-    fn part2_example() {
-        assert_eq!(part2("42: 9 14 | 10 1
-9: 14 27 | 1 26
-10: 23 14 | 28 1
-1: \"a\"
-11: 42 31
-5: 1 14 | 15 1
-19: 14 1 | 14 14
-12: 24 14 | 19 1
-16: 15 1 | 14 14
-31: 14 17 | 1 13
-6: 14 14 | 1 14
-2: 1 24 | 14 4
-0: 8 11
-13: 14 3 | 1 12
-15: 1 | 14
-17: 14 2 | 1 7
-23: 25 1 | 22 14
-28: 16 1
-4: 1 1
-20: 14 14 | 1 15
-3: 5 14 | 16 1
-27: 1 6 | 14 18
-14: \"b\"
-21: 14 1 | 1 14
-25: 1 1 | 1 14
-22: 14 14
-8: 42
-26: 14 22 | 1 20
-18: 15 15
-7: 14 5 | 1 21
-24: 14 1
-
-abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
-bbabbbbaabaabba
-babbbbaabbbbbabbbbbbaabaaabaaa
-aaabbbbbbaaaabaababaabababbabaaabbababababaaa
-bbbbbbbaaaabbbbaaabbabaaa
-bbbababbbbaaaaaaaabbababaaababaabab
-ababaaaaaabaaab
-ababaaaaabbbaba
-baabbaaaabbaaaababbaababb
-abbbbabbbbaaaababbbbbbaaaababb
-aaaaabbaabaaaaababaa
-aaaabbaaaabbaaa
-aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
-babaaabbbaaabaababbaabababaaab
-aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"), 12);
-    }
-
-    #[test]
-    fn basic_4() {
-        assert_eq!(part2("0: 8 11
-1: \"a\"
-14: \"b\"
-8: 42
-11: 42 31
-42: 1
-31: 14
-
-aab"), 1);
     }
 }
