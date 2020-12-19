@@ -74,7 +74,7 @@ function part2(input: string): number {
         .split("\n")
         .filter(message => {
             let s = new Mut(message);
-            let rule_passes = (rules_map.get(0) as Rule).pass(s, rules_map);
+            let rule_passes = rules_map.get(0)!.pass(s, rules_map);
 
             // rule passes and there's no more characters that need checking
             return rule_passes && s.val.length == 0;
@@ -103,7 +103,7 @@ function step_pass(self: Step, s: Mut<string>, rules: Map<number, Rule>): boolea
     // else call pass on the SubRule referenced
 
     if (typeof self === "number") {
-        return (rules.get(self) as Rule).pass(s, rules);
+        return rules.get(self)!.pass(s, rules);
 
     } else {
         console.log(self, s);
