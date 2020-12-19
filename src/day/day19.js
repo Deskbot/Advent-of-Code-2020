@@ -56,23 +56,15 @@ var Rule = /** @class */ (function () {
     };
     Rule.prototype.pass = function (s, rules) {
         // return true if any sub rule passes
-        var e_1, _a;
-        try {
-            for (var _b = __values(this.sequences), _c = _b.next(); !_c.done; _c = _b.next()) {
-                var seq = _c.value;
-                var safely_modifiable_s = new Mut(s.val);
-                if (sequence_pass(seq, safely_modifiable_s, rules)) {
-                    s.val = safely_modifiable_s.val;
-                    return true;
-                }
+        while (true) {
+            var _a = this.sequences.next(), seq = _a.value, done = _a.done;
+            if (done)
+                break;
+            var safely_modifiable_s = new Mut(s.val);
+            if (sequence_pass(seq, safely_modifiable_s, rules)) {
+                s.val = safely_modifiable_s.val;
+                return true;
             }
-        }
-        catch (e_1_1) { e_1 = { error: e_1_1 }; }
-        finally {
-            try {
-                if (_c && !_c.done && (_a = _b["return"])) _a.call(_b);
-            }
-            finally { if (e_1) throw e_1.error; }
         }
         return false;
     };
@@ -84,7 +76,7 @@ function day19() {
     console.log("Part 2: ", part2(file));
 }
 function part2(input) {
-    var e_2, _a;
+    var e_1, _a;
     var itr = input.split("\n\n");
     var rules_str = itr[0];
     var messages_str = itr[1];
@@ -97,12 +89,12 @@ function part2(input) {
             rules_map.set(rule.number, rule);
         }
     }
-    catch (e_2_1) { e_2 = { error: e_2_1 }; }
+    catch (e_1_1) { e_1 = { error: e_1_1 }; }
     finally {
         try {
             if (rules_1_1 && !rules_1_1.done && (_a = rules_1["return"])) _a.call(rules_1);
         }
-        finally { if (e_2) throw e_2.error; }
+        finally { if (e_1) throw e_1.error; }
     }
     // now modify the incorrect rules and put them in the map
     // overwriting the old rules where necessary
@@ -154,21 +146,13 @@ function sequence_parse(s) {
 }
 function sequence_pass(sequence, s, rules) {
     // return true if all steps pass
-    var e_3, _a;
-    try {
-        for (var sequence_1 = __values(sequence), sequence_1_1 = sequence_1.next(); !sequence_1_1.done; sequence_1_1 = sequence_1.next()) {
-            var step = sequence_1_1.value;
-            if (!step_pass(step, s, rules)) {
-                return false;
-            }
+    while (true) {
+        var _a = sequence.next(), step = _a.value, done = _a.done;
+        if (done)
+            break;
+        if (!step_pass(step, s, rules)) {
+            return false;
         }
-    }
-    catch (e_3_1) { e_3 = { error: e_3_1 }; }
-    finally {
-        try {
-            if (sequence_1_1 && !sequence_1_1.done && (_a = sequence_1["return"])) _a.call(sequence_1);
-        }
-        finally { if (e_3) throw e_3.error; }
     }
     return true;
 }

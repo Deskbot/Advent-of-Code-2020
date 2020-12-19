@@ -9,7 +9,7 @@ class Mut<T> {
 class Rule {
     constructor(
         public number: number,
-        public sequences: IterableIterator<Sequence>,
+        public sequences: Iterator<Sequence>,
     ) {}
 
     static parse(s: string) {
@@ -31,7 +31,11 @@ class Rule {
     pass(s: Mut<string>, rules: Map<number, Rule>): boolean {
         // return true if any sub rule passes
 
-        for (const seq of this.sequences) {
+        while (true) {
+            const { value: seq, done} = this.sequences.next();
+
+            if (done) break;
+
             let safely_modifiable_s = new Mut(s.val);
             if (sequence_pass(seq, safely_modifiable_s, rules)) {
                 s.val = safely_modifiable_s.val;
@@ -118,7 +122,7 @@ function step_pass(self: Step, s: Mut<string>, rules: Map<number, Rule>): boolea
 }
 
 
-type Sequence = IterableIterator<Step>;
+type Sequence = Iterator<Step>;
 
 function sequence_parse(s: string): Sequence {
     // split each subrule string by ' ' to get a list of step strings
@@ -129,7 +133,10 @@ function sequence_parse(s: string): Sequence {
 function sequence_pass(sequence: Sequence, s: Mut<string>, rules: Map<number, Rule>): boolean {
     // return true if all steps pass
 
-    for (const step of sequence) {
+    while (true) {
+        const { value: step, done } = sequence.next();
+        if (done) break;
+
         if (!step_pass(step, s, rules)) {
             return false;
         }
