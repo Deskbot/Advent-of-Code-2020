@@ -127,7 +127,7 @@ impl Rule {
 
         for seq in &self.sequences {
             let mut testing_s = s.clone();
-            if !sequence_pass(&seq, &mut testing_s, rules) {
+            if sequence_pass(&seq, &mut testing_s, rules) {
                 // continue where we left off
                 sequence_pass(&seq, s, rules); // slow :(
                 return true;
