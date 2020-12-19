@@ -66,20 +66,20 @@ impl Step {
 
 type Sequence = Vec<Step>;
 
-pub fn sequence_parse(s: &str) -> Sequence {
+fn sequence_parse(s: &str) -> Sequence {
     // split each subrule string by ' ' to get a list of step strings
     // parse string into step
     s.split(' ').map(Step::parse).collect::<Sequence>()
 }
 
-pub fn sequence_pass(sequence: &Sequence, s: &mut &str, rules: &HashMap<i64,Rule>) -> bool {
+fn sequence_pass(sequence: &Sequence, s: &mut &str, rules: &HashMap<i64,Rule>) -> bool {
     // return true if all steps pass
 
     for step in sequence {
         if step.pass(s, rules) {
             // inc str
             let rest_of_str = &s[1..];
-            s = &mut rest_of_str;
+            *s = rest_of_str;
         } else {
             return false;
         }
