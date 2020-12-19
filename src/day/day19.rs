@@ -142,4 +142,28 @@ aaabbb
 aaaabbb
 "), 2);
     }
+
+    #[test]
+    fn basic_1() {
+        assert_eq!(part1("0: \"a\"
+
+a
+"), 1);
+    }
+
+    #[test]
+    fn basic_2() {
+        assert_eq!(part1("0: \"a\"
+
+b
+"), 0);
+    }
+
+    #[test]
+    fn basic_3() {
+        assert_eq!(part1("0: \"a\"
+
+aa
+"), 0);
+    }
 }
