@@ -5,7 +5,7 @@ use std::fs;
 pub fn day19() {
     let file = fs::read_to_string("input/day19.txt").expect("input not found");
 
-    // println!("Part 1: {}", part1(&file));
+    println!("Part 1: {}", part1(&file));
     println!("Part 2: {}", part2(&file));
 }
 
@@ -61,18 +61,57 @@ fn part2(input: &str) -> i64 {
     // 0: 8 11
     // 8: 42
     // 11: 42 31
-    // the solution is to parse
+    // the solution is to count how many times I can parse 42,
+    // then count how many times I can parse 31
+    // pass if 42 is double 31
 
     return messages_str
         .lines()
         .filter(|message| {
-            let mut s = message.chars();
+            let mut char_iter = message.chars();
 
-            let rule_passes = rules_map.get(&0).unwrap()
-                .pass(&mut s, &rules_map);
+            let mut forty_twos = 0;
+            let mut thirty_ones = 0;
+
+            let mut doing_42 = true;
+
+            loop {
+                let mut s = char_iter.clone();
+
+                if doing_42 {
+                    let rule_passes = rules_map.get(&42).unwrap()
+                        .pass(&mut s, &rules_map);
+
+                    if rule_passes {
+                        forty_twos += 1;
+                        char_iter = s;
+                        continue;
+                    } else {
+                        doing_42 = false;
+                        continue;
+                    }
+
+                } else {
+                    let rule_passes = rules_map.get(&31).unwrap()
+                        .pass(&mut s, &rules_map);
+
+                    if rule_passes {
+                        thirty_ones += 1;
+                        char_iter = s;
+                        continue;
+                    } else {
+                        break;
+                    }
+                }
+            }
 
             // rule passes and there's no more characters that need checking
-            return rule_passes && s.count() == 0;
+            // 42+ 42{n} 31{n}
+            // there's always at least one more 42 than 31
+            return forty_twos > thirty_ones
+                && forty_twos > 0
+                && thirty_ones > 0
+                && char_iter.count() == 0;
         })
         .count() as i64;
 }
@@ -81,7 +120,6 @@ fn part2(input: &str) -> i64 {
 enum Step {
     SubRule(i64),
     Char(char),
-    Epsilon,
 }
 
 impl Step {
@@ -111,8 +149,7 @@ impl Step {
             },
             Step::SubRule(num) => {
                 return rules.get(&num).unwrap().pass(s, rules);
-            },
-            Step::Epsilon => true,
+            }
         }
     }
 }
@@ -160,7 +197,6 @@ impl Rule {
     }
 
     pub fn pass(&self, s: &mut Chars, rules: &HashMap<i64,Rule>) -> bool {
-        // println!("{} {}", self.number, s.clone().collect::<String>());
         // return true if any sub rule passes
 
         for seq in &self.sequences {
@@ -173,21 +209,6 @@ impl Rule {
         }
 
         return false;
-    }
-
-    pub fn reverse(&self) -> Rule {
-        let mut reversed_sequences = self.sequences.clone();
-        reversed_sequences.reverse();
-        reversed_sequences
-            .iter_mut()
-            .for_each(|seq| {
-                seq.reverse();
-            });
-
-        Rule {
-            number: self.number,
-            sequences: reversed_sequences,
-        }
     }
 }
 
@@ -290,7 +311,7 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
     }
 
     #[test]
-    fn part2_example_smaller() {
+    fn part2_example_1() {
         assert_eq!(part2("42: 9 14 | 10 1
 9: 14 27 | 1 26
 10: 23 14 | 28 1
@@ -324,19 +345,465 @@ aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
 24: 14 1
 
 bbabbbbaabaabba
-"), 12);
+"), 1);
     }
 
-//     #[test]
-//     fn part2_test() {
-//         assert_eq!(part2("0: 8 11
-// 8: 2
-// 11: 3 4
-// 2: \"a\"
-// 3: \"a\"
-// 4: \"b\"
+    #[test]
+    fn part2_example_2() {
+        assert_eq!(part2("42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: \"a\"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: \"b\"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
 
-// aab
-// "), 1);
-//     }
+babbbbaabbbbbabbbbbbaabaaabaaa
+"), 1);
+    }
+
+    #[test]
+    fn part2_example_3() {
+        assert_eq!(part2("42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: \"a\"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: \"b\"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
+
+aaabbbbbbaaaabaababaabababbabaaabbababababaaa
+"), 1);
+    }
+
+    #[test]
+    fn part2_example_4() {
+        assert_eq!(part2("42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: \"a\"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: \"b\"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
+
+bbbbbbbaaaabbbbaaabbabaaa
+"), 1);
+    }
+
+    #[test]
+    fn part2_example_5() {
+        assert_eq!(part2("42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: \"a\"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: \"b\"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
+
+bbbababbbbaaaaaaaabbababaaababaabab
+"), 1);
+    }
+
+    #[test]
+    fn part2_example_6() {
+        assert_eq!(part2("42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: \"a\"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: \"b\"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
+
+ababaaaaaabaaab
+"), 1);
+    }
+
+    #[test]
+    fn part2_example_7() {
+        assert_eq!(part2("42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: \"a\"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: \"b\"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
+
+ababaaaaabbbaba
+"), 1);
+    }
+
+    #[test]
+    fn part2_example_8() {
+        assert_eq!(part2("42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: \"a\"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: \"b\"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
+
+baabbaaaabbaaaababbaababb
+"), 1);
+    }
+
+    #[test]
+    fn part2_example_9() {
+        assert_eq!(part2("42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: \"a\"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: \"b\"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
+
+abbbbabbbbaaaababbbbbbaaaababb
+"), 1);
+    }
+
+    #[test]
+    fn part2_example_10() {
+        assert_eq!(part2("42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: \"a\"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: \"b\"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
+
+aaaaabbaabaaaaababaa
+"), 1);
+    }
+
+    #[test]
+    fn part2_example_11() {
+        assert_eq!(part2("42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: \"a\"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: \"b\"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
+
+aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
+"), 1);
+    }
+
+    #[test]
+    fn part2_example_12() {
+        assert_eq!(part2("42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: \"a\"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: \"b\"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
+
+aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba
+"), 1);
+    }
+
+
+    #[test]
+    fn part2_example_13() {
+        assert_eq!(part2("42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: \"a\"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: \"b\"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
+
+abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
+aaaabbaaaabbaaa
+babaaabbbaaabaababbaabababaaab
+"), 0);
+    }
 }
