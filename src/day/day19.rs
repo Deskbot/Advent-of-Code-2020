@@ -57,67 +57,19 @@ fn part2(input: &str) -> i64 {
         rules_map.insert(rule.number, rule);
     }
 
-    // now modify the incorrect rules and put them in the map
-    // overwriting the old rules where necessary
-
-    // These rules
-    // 8: 42 | 42 8
-    // 11: 42 31 | 42 11 31
-
-    // are equivalent to
-    // 8: 42 (8 | ε)
-    // 11: 42 (11 | ε) 31
-
-    // but we don't have brackets so turn them into their own rules
-    //   8: 42 -8
-    //  -8: 8 | ε
-    //  11: 42 -11 31
-    // -11: 11 | ε
-
-    let rule_8 = Rule {
-        number: 8,
-        sequences: vec![vec![Step::SubRule(42), Step::SubRule(-8)]],
-    };
-    let rule_negative_8 = Rule {
-        number: -8,
-        sequences: vec![vec![Step::SubRule(8)], vec![Step::Epsilon]],
-    };
-    let rule_11 = Rule {
-        number: 11,
-        sequences: vec![vec![Step::SubRule(42), Step::SubRule(-11), Step::SubRule(31)]],
-    };
-    let rule_negative_11 = Rule {
-        number: -11,
-        sequences: vec![vec![Step::SubRule(11)], vec![Step::Epsilon]],
-    };
-
-    rules_map.insert(8, rule_8);
-    rules_map.insert(-8, rule_negative_8);
-    rules_map.insert(11, rule_11);
-    rules_map.insert(-11, rule_negative_11);
-
-    // like this we would still have problems due to
-    // in the case of 0: 8 11
-    // we might get
-    // input: aab
-    // if 8 is effectively "a", we would consume both "a"s meaning the rest of the string doesn't match 11,
-    // although it can
-
-    // solution: parse right to left lmao
-
-    let mut backwards_rules_map = HashMap::<i64,Rule>::new();
-    for (key, val) in rules_map {
-        backwards_rules_map.insert(key, val.reverse());
-    }
+    // only 0 uses 8 and 11
+    // 0: 8 11
+    // 8: 42
+    // 11: 42 31
+    // the solution is to parse
 
     return messages_str
         .lines()
         .filter(|message| {
-            let message_reversed = message.chars().rev().collect::<String>();
-            let mut s = message_reversed.chars();
+            let mut s = message.chars();
 
-            let rule_passes = backwards_rules_map.get(&0).unwrap()
-                .pass(&mut s, &backwards_rules_map);
+            let rule_passes = rules_map.get(&0).unwrap()
+                .pass(&mut s, &rules_map);
 
             // rule passes and there's no more characters that need checking
             return rule_passes && s.count() == 0;
