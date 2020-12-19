@@ -43,6 +43,74 @@ fn part1(input: &str) -> i64 {
         .count() as i64;
 }
 
+
+fn part2(input: &str) -> i64 {
+    let mut itr = input.split("\n\n");
+    let rules_str = itr.next().unwrap();
+    let messages_str = itr.next().unwrap();
+
+    let rules = rules_str.lines().map(Rule::parse);
+
+    // create a hashmap of rule numbers to rules
+    let mut rules_map = HashMap::<i64,Rule>::new();
+    for rule in rules {
+        rules_map.insert(rule.number, rule);
+    }
+
+    // now modify the incorrect rules and put them in the map
+    // overwriting the old rules where necessary
+
+    // These rules
+    // 8: 42 | 42 8
+    // 11: 42 31 | 42 11 31
+
+    // are equivalent to
+    // 8: 42 (8 | ε)
+    // 11: 42 (11 | ε) 31
+
+    // but we don't have brackets so turn them into their own rules
+    //   8: 42 -8
+    //  -8: 8 | ε
+    //  11: 42 -11 31
+    // -11: 11 | ε
+
+    let rule_8 = Rule {
+        number: 8,
+        sequences: vec![vec![Step::SubRule(42), Step::SubRule(-8)]],
+    };
+    let rule_negative_8 = Rule {
+        number: -8,
+        sequences: vec![vec![Step::SubRule(8)], vec![Step::Epsilon]],
+    };
+    let rule_11 = Rule {
+        number: 11,
+        sequences: vec![vec![Step::SubRule(42), Step::SubRule(-11), Step::SubRule(31)]],
+    };
+    let rule_negative_11 = Rule {
+        number: -11,
+        sequences: vec![vec![Step::SubRule(11)], vec![Step::Epsilon]],
+    };
+
+    rules_map.insert(8, rule_8);
+    rules_map.insert(-8, rule_negative_8);
+    rules_map.insert(11, rule_11);
+    rules_map.insert(-11, rule_negative_11);
+
+    return messages_str
+        .lines()
+        .filter(|message| {
+            let mut s = message.chars();
+
+            let rule_passes = rules_map.get(&0).unwrap()
+                .pass(&mut s, &rules_map);
+
+            // rule passes and there's no more characters that need checking
+            return rule_passes && s.count() == 0;
+        })
+        .count() as i64;
+}
+
+#[derive(Debug)]
 enum Step {
     SubRule(i64),
     Char(char)
@@ -64,6 +132,8 @@ impl Step {
     }
 
     pub fn pass(&self, s: &mut Chars, rules: &HashMap<i64,Rule>) -> bool {
+        println!("{:?} {}", self, s.clone().collect::<String>());
+
         // if I want a char, check the char
         // else call pass on the SubRule referenced
         match *self {
@@ -183,5 +253,69 @@ b
 
 aa
 "), 0);
+    }
+
+    #[test]
+    fn part2_example() {
+        assert_eq!(part2("42: 9 14 | 10 1
+9: 14 27 | 1 26
+10: 23 14 | 28 1
+1: \"a\"
+11: 42 31
+5: 1 14 | 15 1
+19: 14 1 | 14 14
+12: 24 14 | 19 1
+16: 15 1 | 14 14
+31: 14 17 | 1 13
+6: 14 14 | 1 14
+2: 1 24 | 14 4
+0: 8 11
+13: 14 3 | 1 12
+15: 1 | 14
+17: 14 2 | 1 7
+23: 25 1 | 22 14
+28: 16 1
+4: 1 1
+20: 14 14 | 1 15
+3: 5 14 | 16 1
+27: 1 6 | 14 18
+14: \"b\"
+21: 14 1 | 1 14
+25: 1 1 | 1 14
+22: 14 14
+8: 42
+26: 14 22 | 1 20
+18: 15 15
+7: 14 5 | 1 21
+24: 14 1
+
+abbbbbabbbaaaababbaabbbbabababbbabbbbbbabaaaa
+bbabbbbaabaabba
+babbbbaabbbbbabbbbbbaabaaabaaa
+aaabbbbbbaaaabaababaabababbabaaabbababababaaa
+bbbbbbbaaaabbbbaaabbabaaa
+bbbababbbbaaaaaaaabbababaaababaabab
+ababaaaaaabaaab
+ababaaaaabbbaba
+baabbaaaabbaaaababbaababb
+abbbbabbbbaaaababbbbbbaaaababb
+aaaaabbaabaaaaababaa
+aaaabbaaaabbaaa
+aaaabbaabbaaaaaaabbbabbbaaabbaabaaa
+babaaabbbaaabaababbaabababaaab
+aabbbbbaabbbaaaaaabbbbbababaaaaabbaaabba"), 12);
+    }
+
+    #[test]
+    fn basic_4() {
+        assert_eq!(part2("0: 8 11
+1: \"a\"
+14: \"b\"
+8: 42
+11: 42 31
+42: 1
+31: 14
+
+aab"), 1);
     }
 }
