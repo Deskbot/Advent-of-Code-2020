@@ -1,0 +1,18 @@
+{
+    "compilerOptions": {
+        "alwaysStrict": true,
+        "lib": [
+            "ES2019"
+        ],
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "outDir": "./build",
+        "sourceMap": true,
+        "sourceRoot": "../src-server",
+        "strictNullChecks": true,
+        "strictPropertyInitialization": true,
+        "target": "ES2019"
+    }
+}

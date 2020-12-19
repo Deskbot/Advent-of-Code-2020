@@ -6,3 +6,11 @@ First attempt at doing anything substantial in rust.
 # must be in the base directory
 cargo run [day number]
 ```
+
+```
+# day 19 part 2
+
+npm i
+npx tsc src/day/day19.ts # ignore errors
+node src/day/day19
+```
