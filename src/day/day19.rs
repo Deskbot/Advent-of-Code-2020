@@ -6,7 +6,7 @@ pub fn day19() {
     let file = fs::read_to_string("input/day19.txt").expect("input not found");
 
     println!("Part 1: {}", part1(&file));
-    // println!("Part 2: {}", part2(&file));
+    println!("Part 2: {}", part2(&file));
 }
 
 fn part1(input: &str) -> i64 {
@@ -43,9 +43,77 @@ fn part1(input: &str) -> i64 {
         .count() as i64;
 }
 
+
+fn part2(input: &str) -> i64 {
+    let mut itr = input.split("\n\n");
+    let rules_str = itr.next().unwrap();
+    let messages_str = itr.next().unwrap();
+
+    let rules = rules_str.lines().map(Rule::parse);
+
+    // create a hashmap of rule numbers to rules
+    let mut rules_map = HashMap::<i64,Rule>::new();
+    for rule in rules {
+        rules_map.insert(rule.number, rule);
+    }
+
+    // now modify the incorrect rules and put them in the map
+    // overwriting the old rules where necessary
+
+    // These rules
+    // 8: 42 | 42 8
+    // 11: 42 31 | 42 11 31
+
+    // are equivalent to
+    // 8: 42 (8 | ε)
+    // 11: 42 (11 | ε) 31
+
+    // but we don't have brackets so turn them into their own rules
+    //   8: 42 -8
+    //  -8: 8 | ε
+    //  11: 42 -11 31
+    // -11: 11 | ε
+
+    let rule_8 = Rule {
+        number: 8,
+        sequences: vec![vec![Step::SubRule(42), Step::SubRule(-8)]],
+    };
+    let rule_negative_8 = Rule {
+        number: -8,
+        sequences: vec![vec![Step::SubRule(8)], vec![Step::Epsilon]],
+    };
+    let rule_11 = Rule {
+        number: 11,
+        sequences: vec![vec![Step::SubRule(42), Step::SubRule(-11), Step::SubRule(31)]],
+    };
+    let rule_negative_11 = Rule {
+        number: -11,
+        sequences: vec![vec![Step::SubRule(11)], vec![Step::Epsilon]],
+    };
+
+    rules_map.insert(8, rule_8);
+    rules_map.insert(-8, rule_negative_8);
+    rules_map.insert(11, rule_11);
+    rules_map.insert(-11, rule_negative_11);
+
+    return messages_str
+        .lines()
+        .filter(|message| {
+            let mut s = message.chars();
+
+            let rule_passes = rules_map.get(&0).unwrap()
+                .pass(&mut s, &rules_map);
+
+            // rule passes and there's no more characters that need checking
+            return rule_passes && s.count() == 0;
+        })
+        .count() as i64;
+}
+
 enum Step {
     SubRule(i64),
-    Char(char)
+    Char(char),
+    Epsilon,
 }
 
 impl Step {
@@ -76,6 +144,7 @@ impl Step {
             Step::SubRule(num) => {
                 return rules.get(&num).unwrap().pass(s, rules);
             },
+            Step::Epsilon => true,
         }
     }
 }
