@@ -98,3 +98,13 @@ impl SumI64 for dyn Iterator<Item = i64> {
         self.fold(0, |acc, next| acc + next)
     }
 }
+
+pub trait ProductI64 {
+    fn product(&mut self) -> i64;
+}
+
+impl ProductI64 for dyn Iterator<Item = i64> {
+    fn product(&mut self) -> i64 {
+        self.fold(1, |acc, next| acc * next)
+    }
+}
