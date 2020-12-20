@@ -38,19 +38,19 @@ fn part1(input: &str) -> i64 {
 
             let other_edges = other_tile.get_edges();
 
-            if other_edges.contains(my_left) {
+            if other_edges.iter().any(|other_edge| edges_eq(my_left, other_edge)) {
                 left_matches += 1;
             }
 
-            if other_edges.contains(my_right) {
+            if other_edges.iter().any(|other_edge| edges_eq(my_right, other_edge)) {
                 right_matches += 1;
             }
 
-            if other_edges.contains(my_top) {
+            if other_edges.iter().any(|other_edge| edges_eq(my_top, other_edge)) {
                 top_matches += 1;
             }
 
-            if other_edges.contains(my_bottom) {
+            if other_edges.iter().any(|other_edge| edges_eq(my_bottom, other_edge)) {
                 bottom_matches += 1;
             }
         }
@@ -149,6 +149,17 @@ impl Tile {
     pub fn bottom(&self) -> &Vec<char> {
         &self.grid[self.grid.len() - 1]
     }
+}
+
+fn edges_eq(edge1: &Vec<char>, edge2: &Vec<char>) -> bool {
+    if edge1 == edge2 {
+        return true;
+    }
+
+    let mut edge1_reversed = edge1.clone();
+    edge1_reversed.reverse();
+
+    return &edge1_reversed == edge2;
 }
 
 
