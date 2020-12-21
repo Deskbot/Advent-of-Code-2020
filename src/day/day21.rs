@@ -4,7 +4,7 @@ pub fn day21() {
     let file = fs::read_to_string("input/day21.txt").expect("input not found");
 
     println!("Part 1: {}", part1(&file));
-    // println!("Part 2: {}", part2(&file));
+    println!("Part 2: {}", part2(&file));
 }
 
 fn part1(input: &str) -> i64 {
@@ -69,6 +69,10 @@ fn part1(input: &str) -> i64 {
         .count() as i64;
 }
 
+fn part2(s: &str) -> String {
+
+}
+
 #[derive(Debug)]
 struct Food<'a> {
     allergens: HashSet<&'a str>,
@@ -100,13 +104,18 @@ impl<'a> Food<'a> {
 mod tests {
     use super::*;
 
-    #[test]
-    fn part1_example() {
-        assert_eq!(part1("mxmxvkd kfcds sqjhc nhms (contains dairy, fish)
+    const EXAMPLE: &str = "mxmxvkd kfcds sqjhc nhms (contains dairy, fish)
 trh fvjkl sbzzf mxmxvkd (contains dairy)
 sqjhc fvjkl (contains soy)
-sqjhc mxmxvkd sbzzf (contains fish)"),
-            5
-        );
+sqjhc mxmxvkd sbzzf (contains fish)";
+
+    #[test]
+    fn part1_example() {
+        assert_eq!(part1(EXAMPLE), 5);
+    }
+
+    #[test]
+    fn part2_example() {
+        assert_eq!(part2(EXAMPLE), "mxmxvkd,sqjhc,fvjkl");
     }
 }
