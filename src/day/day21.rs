@@ -45,11 +45,16 @@ fn part1(input: &str) -> i64 {
                 .collect::<HashSet<&str>>()
         );
 
-    let non_allergenic_ingredients = all_ingredients.difference(&all_allergenic_ingredients);
+    let non_allergenic_ingredients = all_ingredients
+        .difference(&all_allergenic_ingredients)
+        .map(|&s| s)
+        .collect::<HashSet<&str>>();
 
-    println!("{:?}", non_allergenic_ingredients);
-
-    0
+    return foods.iter()
+        .map(|food| &food.ingredients)
+        .flatten()
+        .filter(|&&ingredient| non_allergenic_ingredients.contains(ingredient))
+        .count() as i64;
 }
 
 #[derive(Debug)]
