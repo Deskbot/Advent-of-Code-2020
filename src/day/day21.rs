@@ -99,7 +99,7 @@ fn part2(input: &str) -> String {
         }
     }
 
-    let mut bad_ingredients = Vec::<&str>::new();
+    let mut bad_ingredients = HashMap::<&str, &str>::new();
 
     while allergens_to_ingredients.len() > 0  {
         let newly_known = allergens_to_ingredients
@@ -114,7 +114,7 @@ fn part2(input: &str) -> String {
             let ingredients = allergens_to_ingredients.get(allergen).unwrap();
             // there's only 1 ingredient in this set
             let &bad_ingredient = ingredients.iter().next().unwrap();
-            bad_ingredients.push(bad_ingredient);
+            bad_ingredients.insert(allergen, bad_ingredient);
 
             // remove this possibility from the other allergens
             for ing in &mut allergens_to_ingredients.values_mut() {
@@ -125,8 +125,17 @@ fn part2(input: &str) -> String {
         }
     }
 
-    bad_ingredients.sort();
-    return bad_ingredients.join(",");
+    let mut all_allergens = bad_ingredients.keys()
+        .map(|&s| s)
+        .collect::<Vec<&str>>();
+    all_allergens.sort();
+
+    let ordered_ingredients = all_allergens
+        .into_iter()
+        .map(|allergen| *bad_ingredients.get(allergen).unwrap())
+        .collect::<Vec<&str>>();
+
+    return ordered_ingredients.join(",");
 }
 
 #[derive(Debug)]
