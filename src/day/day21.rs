@@ -69,8 +69,64 @@ fn part1(input: &str) -> i64 {
         .count() as i64;
 }
 
-fn part2(s: &str) -> String {
+fn part2(input: &str) -> String {
+    let foods = input.lines().map(Food::parse).collect::<Vec<Food>>();
 
+    // unionise all the ingredients sets into one set
+    let all_ingredients = foods.iter().map(|food| &food.ingredients)
+        .fold(
+            HashSet::new(),
+            |acc, next| acc
+                .union(&next)
+                .map(|&s| s)
+                .collect::<HashSet<&str>>()
+        );
+
+    // allergen to set of possible foods that contain it
+    let mut allergens_to_ingredients = HashMap::<&str, HashSet<&str>>::new();
+
+    for food in &foods {
+        for allergen in &food.allergens {
+            let possible_ingredients = allergens_to_ingredients
+                .entry(allergen)
+                .or_insert(all_ingredients.clone()); // before we filter down the possibilities, it could be any ingredient
+
+            let new_possible_ingredients = possible_ingredients
+                .intersection(&food.ingredients)
+                .map(|&a| a)
+                .collect::<HashSet<&str>>();
+            allergens_to_ingredients.insert(allergen, new_possible_ingredients);
+        }
+    }
+
+    let mut bad_ingredients = Vec::<&str>::new();
+
+    while allergens_to_ingredients.len() > 0  {
+        let newly_known = allergens_to_ingredients
+            .iter()
+            .filter(|(_, ingredients)| ingredients.len() == 1)
+            .map(|(&allergen,_)| allergen)
+            .collect::<Vec<&str>>();
+
+        // println!("{:?}", newly_known);
+
+        for allergen in newly_known {
+            let ingredients = allergens_to_ingredients.get(allergen).unwrap();
+            // there's only 1 ingredient in this set
+            let &bad_ingredient = ingredients.iter().next().unwrap();
+            bad_ingredients.push(bad_ingredient);
+
+            // remove this possibility from the other allergens
+            for ing in &mut allergens_to_ingredients.values_mut() {
+                ing.remove(bad_ingredient);
+            }
+
+            allergens_to_ingredients.remove(allergen);
+        }
+    }
+
+    bad_ingredients.sort();
+    return bad_ingredients.join(",");
 }
 
 #[derive(Debug)]
