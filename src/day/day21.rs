@@ -8,7 +8,8 @@ pub fn day21() {
 }
 
 fn part1(input: &str) -> i64 {
-    let mut allergens_to_ingredients = HashMap::<&str, HashSet<&str>>::new(); // allergen to set of possible foods that contain it
+    // allergen to set of possible foods that contain it
+    let mut allergens_to_ingredients = HashMap::<&str, HashSet<&str>>::new();
 
     let foods = input.lines().map(Food::parse).collect::<Vec<Food>>();
 
@@ -35,7 +36,10 @@ fn part1(input: &str) -> i64 {
                 .collect::<HashSet<&str>>()
         );
 
+    println!("{:?}", all_ingredients);
+
     // unionise all the ingredients sets into one set
+    // all /possibly/ allergenic ingredients
     let all_allergenic_ingredients = allergens_to_ingredients.values()
         .fold(
             HashSet::new(),
@@ -45,10 +49,15 @@ fn part1(input: &str) -> i64 {
                 .collect::<HashSet<&str>>()
         );
 
+    println!("{:?}", all_allergenic_ingredients);
+
+    // not possibly allergenic ingredients
     let non_allergenic_ingredients = all_ingredients
         .difference(&all_allergenic_ingredients)
         .map(|&s| s)
         .collect::<HashSet<&str>>();
+
+    println!("{:?}", non_allergenic_ingredients);
 
     return foods.iter()
         .map(|food| &food.ingredients)
