@@ -8,23 +8,7 @@ pub fn day21() {
 }
 
 fn part1(input: &str) -> i64 {
-    // allergen to set of possible foods that contain it
-    let mut allergens_to_ingredients = HashMap::<&str, HashSet<&str>>::new();
-
     let foods = input.lines().map(Food::parse).collect::<Vec<Food>>();
-
-    for food in &foods {
-        for allergen in &food.allergens {
-            let possible_ingredients = allergens_to_ingredients
-                .entry(allergen).or_insert(HashSet::new());
-
-            let new_possible_ingredients = possible_ingredients
-                .intersection(&food.ingredients)
-                .map(|&a| a)
-                .collect::<HashSet<&str>>();
-            allergens_to_ingredients.insert(allergen, new_possible_ingredients);
-        }
-    }
 
     // unionise all the ingredients sets into one set
     let all_ingredients = foods.iter().map(|food| &food.ingredients)
@@ -37,6 +21,25 @@ fn part1(input: &str) -> i64 {
         );
 
     println!("{:?}", all_ingredients);
+
+    // allergen to set of possible foods that contain it
+    let mut allergens_to_ingredients = HashMap::<&str, HashSet<&str>>::new();
+
+    for food in &foods {
+        for allergen in &food.allergens {
+            let possible_ingredients = allergens_to_ingredients
+                .entry(allergen)
+                .or_insert(all_ingredients.clone()); // before we filter down the possibilities, it could be any ingredient
+
+            let new_possible_ingredients = possible_ingredients
+                .intersection(&food.ingredients)
+                .map(|&a| a)
+                .collect::<HashSet<&str>>();
+            allergens_to_ingredients.insert(allergen, new_possible_ingredients);
+        }
+    }
+
+    println!("{:?}", allergens_to_ingredients);
 
     // unionise all the ingredients sets into one set
     // all /possibly/ allergenic ingredients
