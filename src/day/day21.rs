@@ -20,7 +20,7 @@ fn part1(input: &str) -> i64 {
                 .collect::<HashSet<&str>>()
         );
 
-    println!("{:?}", all_ingredients);
+    // println!("{:?}", all_ingredients);
 
     // allergen to set of possible foods that contain it
     let mut allergens_to_ingredients = HashMap::<&str, HashSet<&str>>::new();
@@ -39,7 +39,7 @@ fn part1(input: &str) -> i64 {
         }
     }
 
-    println!("{:?}", allergens_to_ingredients);
+    // println!("{:?}", allergens_to_ingredients);
 
     // unionise all the ingredients sets into one set
     // all /possibly/ allergenic ingredients
@@ -52,7 +52,7 @@ fn part1(input: &str) -> i64 {
                 .collect::<HashSet<&str>>()
         );
 
-    println!("{:?}", all_allergenic_ingredients);
+    // println!("{:?}", all_allergenic_ingredients);
 
     // not possibly allergenic ingredients
     let non_allergenic_ingredients = all_ingredients
@@ -60,7 +60,7 @@ fn part1(input: &str) -> i64 {
         .map(|&s| s)
         .collect::<HashSet<&str>>();
 
-    println!("{:?}", non_allergenic_ingredients);
+    // println!("{:?}", non_allergenic_ingredients);
 
     return foods.iter()
         .map(|food| &food.ingredients)
