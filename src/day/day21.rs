@@ -82,7 +82,7 @@ impl<'a> Food<'a> {
         let allergens_str = itr.next().unwrap();
 
         let allergens = allergens_str.split(")").next().unwrap()
-            .split(" ")
+            .split(", ")
             .collect();
         let ingredients = ingredients_str
             .split(" ")
