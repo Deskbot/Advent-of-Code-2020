@@ -41,6 +41,7 @@ fn run_day(day: usize) {
         day::day19::day19,
         day::day20::day20,
         day::day21::day21,
+        day::day22::day22,
     ];
 
     let day_index = day - 1;
