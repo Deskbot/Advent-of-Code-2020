@@ -17,14 +17,15 @@ fn part1(input: &str) -> i64 {
     let mut p2 = Deck::parse(p2_input);
 
     let winner = loop {
-        let card_1 = match p1.draw() {
-            Some(card_1) => card_1,
-            None => break p2,
-        };
-        let card_2 = match p2.draw() {
-            Some(card_2) => card_2,
-            None => break p1,
-        };
+        if p1.is_empty() {
+            break &p2;
+        }
+        if p2.is_empty() {
+            break &p1;
+        }
+
+        let card_1 = p1.draw().unwrap();
+        let card_2 = p2.draw().unwrap();
 
         if card_1 > card_2 {
             p1.append(card_1);
@@ -38,6 +39,7 @@ fn part1(input: &str) -> i64 {
     return winner.score();
 }
 
+#[derive(Debug)]
 struct Deck(VecDeque<i64>);
 
 impl Deck {
@@ -59,6 +61,10 @@ impl Deck {
         return self.0.pop_front();
     }
 
+    pub fn is_empty(&self) -> bool {
+        return self.0.len() == 0;
+    }
+
     pub fn score(&self) -> i64 {
         let mut multiplier = self.0.len() as i64;
         let mut total = 0;
@@ -69,5 +75,31 @@ impl Deck {
         }
 
         return total;
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const EXAMPLE_1: &str = "Player 1:
+9
+2
+6
+3
+1
+
+Player 2:
+5
+8
+4
+7
+10
+";
+
+    #[test]
+    fn part1_example() {
+        assert_eq!(part1(EXAMPLE_1), 306);
     }
 }
