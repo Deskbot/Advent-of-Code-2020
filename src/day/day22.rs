@@ -3,19 +3,22 @@ use std::{collections::VecDeque, fs};
 pub fn day22() {
     let file = fs::read_to_string("input/day22.txt").expect("input not found");
 
-    println!("Part 1: {}", part1(&file));
-    // println!("Part 2: {}", part2(&file));
+    let (p1,p2) = parse_input(&file);
+
+    println!("Part 1: {}", part1(p1.clone(), p2.clone()));
+    println!("Part 2: {}", part2(p1, p2));
 }
 
-fn part1(input: &str) -> i64 {
-    // parse input
+fn parse_input(input: &str) -> (Deck, Deck) {
     let mut itr = input.split("\n\n");
     let p1_input = itr.next().unwrap();
     let p2_input = itr.next().unwrap();
 
-    let mut p1 = Deck::parse(p1_input);
-    let mut p2 = Deck::parse(p2_input);
+    return (Deck::parse(p1_input),
+            Deck::parse(p2_input));
+}
 
+fn part1(mut p1: Deck, mut p2: Deck) -> i64 {
     let winner = loop {
         if p1.is_empty() {
             break &p2;
@@ -39,7 +42,11 @@ fn part1(input: &str) -> i64 {
     return winner.score();
 }
 
-#[derive(Debug)]
+fn part2(p1: Deck, p2: Deck) -> i64 {
+    0
+}
+
+#[derive(Clone, Debug)]
 struct Deck(VecDeque<i64>);
 
 impl Deck {
@@ -100,6 +107,14 @@ Player 2:
 
     #[test]
     fn part1_example() {
-        assert_eq!(part1(EXAMPLE_1), 306);
+        let (p1,p2) = parse_input(EXAMPLE_1); // I shouldn't have to do this.
+        assert_eq!(part1(p1,p2), 306);
+    }
+
+    #[test]
+    fn part1_actual() {
+        let file = fs::read_to_string("input/day22.txt").expect("input not found");
+        let (p1,p2) = parse_input(&file);
+        assert_eq!(part1(p1,p2), 31957);
     }
 }
